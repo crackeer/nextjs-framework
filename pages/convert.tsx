@@ -2,65 +2,61 @@ import React from 'react';
 import { Button, Input, Row, Col, Space } from 'antd';
 import { Base64 } from 'js-base64';
 import dayjs from 'dayjs'
+import QRCode from 'qrcode.react'
 
 class Convert extends React.Component<any, any> {
-    chart: any
+    qrcode: any
     constructor(props: any) {
         super(props); // 用于父子组件传值
         this.state = {
             input: '',
-            output: ''
+            output: '',
+            displayQRCode : false,
         }
     }
-    base64Decode = async () => {
-
-        let value = Base64.decode(this.state.input)
-        this.setState({
-            output: value
-        })
+    componentDidMount = async () => {
+        this.qrcode = await require('qrcode')
     }
-    base64Eecode = async () => {
-        let value = Base64.encode(this.state.input)
+    do = async (tool) => {
+        const {input} = this.state
+        let output = ""
+        let displayQRCode = false
+        switch(tool) {
+            case "base64_decode":
+                output =  Base64.decode(input)
+                break
+            case "base64_encode":
+                output =  Base64.encode(input)
+                break
+            case "urldecode":
+                output =  encodeURIComponent(input)
+                break
+            case "urlencode":
+                output =  decodeURIComponent(input)
+                break
+            case "formate_time":
+                output =  dayjs(this.state.input * 1000).format('YYYY-MM-DD HH:mm:ss')
+                break
+            case "now_timestamp":
+                output =  '' + dayjs().unix()
+                break
+            case "qrcode":
+                displayQRCode = true
+                output =  input
+                break
+        }
         this.setState({
-            output: value
-        })
-    }
-    urlencode = async () => {
-        let value = encodeURIComponent(this.state.input)
-        this.setState({
-            output: value
-        })
-    }
-    urldecode = async () => {
-        let value = decodeURIComponent(this.state.input)
-        this.setState({
-            output: value
-        })
-    }
-    formatTimestamp = async () => {
-        let value = dayjs(this.state.input * 1000).format('YYYY-MM-DD HH:mm:ss')
-        this.setState({
-            output: value
-        })
-    }
-    nowTimestamp = async () => {
-        let value = dayjs().unix()
-        this.setState({
-            output: value
-        })
-    }
-    QRCode = async () => {
-        let value = dayjs().unix()
-        this.setState({
-            output: value
+            displayQRCode : displayQRCode,
+            output: output
         })
     }
     render() {
+        const {displayQRCode} = this.state
         return (
             <div>
                 <Row>
                     <Col span={24}>
-                        <Input.TextArea rows={4} onChange={(e) => {
+                        <Input.TextArea rows={10} onChange={(e) => {
                             this.setState({
                                 input: e.target.value
                             })
@@ -69,17 +65,23 @@ class Convert extends React.Component<any, any> {
                 </Row>
 
                 <Space align="center" style={{ marginTop: '20px' }}>
-                    <Button onClick={this.urldecode} type="primary">UrlDecode</Button>
-                    <Button onClick={this.urlencode} type="primary">UrlEecode</Button>
-                    <Button onClick={this.base64Decode} type="primary">Base64Decode</Button>
-                    <Button onClick={this.base64Eecode} type="primary">Base64Eecode</Button>
-                    <Button onClick={this.formatTimestamp} type="primary">时间戳格式化</Button>
-                    <Button onClick={this.nowTimestamp} type="primary">获取当前时间戳</Button>
+                    <Button onClick={()=> {this.do("urldecode")}} type="primary">UrlDecode</Button>
+                    <Button onClick={()=> {this.do("urlencode")}} type="primary">UrlEncode</Button>
+                    <Button onClick={() => {
+                        this.do("base64_decode")
+                    }} type="primary">Base64Decode</Button>
+                    <Button onClick={() => {
+                        this.do("base64_encode")
+                    }} type="primary">Base64Encode</Button>
+                    <Button onClick={() => {this.do("formate_time")}} type="primary">时间戳格式化</Button>
+                    <Button onClick={() => {this.do("now_timestamp")}} type="primary">获取当前时间戳</Button>
+                    <Button onClick={() => {this.do("qrcode")}} type="primary">生成二维码</Button>
                 </Space>
 
                 <Row style={{ marginTop: '20px' }}>
                     <Col span={24}>
-                        <Input.TextArea rows={4} value={this.state.output} />
+                        <QRCode value={this.state.output}  size={300} style={{display:displayQRCode ? '' : 'none'}}/>
+                        <p style={{fontSize:'15px',display:displayQRCode ? 'none' : ''}}>{this.state.output}</p>
                     </Col>
                 </Row>
             </div>

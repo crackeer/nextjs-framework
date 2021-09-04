@@ -1,24 +1,34 @@
 import React from 'react';
-import { Collapse, Input, Card, Divider, Button, Tabs, message } from 'antd';
-
+import { Collapse, Input, Button, Space, Radio, Tabs, message } from 'antd';
+import { Select, Card, Row, Col } from 'antd';
+import RenderList from '../component/Table'
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
-
-class WsClient extends React.Component<any, any> {
-    webConn: any = null
+import dayjs from 'dayjs';
+import stringRandom from 'string-random'
+import { List } from 'antd/lib/form/Form';
+const { Option } = Select;
+import WsaClient from '../component/WsClient';
+import qs from 'query-string';
+class Websocket extends React.Component<any, any> {
+    webConn: any = null;
     constructor(props: any) {
         super(props); // 用于父子组件传值
         this.state = {
-            uri: '',
+            wsUrl: "ws://preline-i.svc.open.realsee.com/wslog",
             connected: false,
             messages: [],
-            sendmsg : '',
+
         }
     }
+
     componentDidMount = () => {
         window.addEventListener('beforeunload', this.beforeunload);
     }
-
+    componentWillUnmount = () => {
+        this.closeWsServer()
+        window.removeEventListener('beforeunload', this.beforeunload);
+    }
     closeWsServer = async () => {
         if (this.webConn != null) {
             this.webConn.close()
@@ -29,32 +39,25 @@ class WsClient extends React.Component<any, any> {
             connected: false,
         })
     }
-    setWsUri = async (val) => {
-        await this.setState({
-            uri: val
-        })
-    }
-    componentWillUnmount = () => {
-        this.closeWsServer()
-        window.removeEventListener('beforeunload', this.beforeunload);
-    }
     connectWsServer = async () => {
-        await this.closeWsServer()
-        this.setState({
-            connected: true
-        })
-        this.connectWs()
+        if (this.state.connected) {
+            await this.closeWsServer()
+        } else {
+            await this.connectWs()
+        }
     }
-    connectWs = () => {
-        if (this.state.uri.trim().length < 1) {
+    connectWs = async () => {
+        if (this.state.wsUrl.trim().length < 1) {
             return
         }
-        let wsUrl = this.props.wsHost + this.state.uri
         try {
-            this.webConn = new WebSocket(wsUrl);
+            this.webConn = new WebSocket(this.state.wsUrl);
             this.webConn.onopen = this.onWsOpen
             this.webConn.onmessage = this.onWsMessage
             this.webConn.onclose = this.onWsClose
+            this.setState({
+                connected: true
+            })
         } catch (e) {
             message.info(e)
         }
@@ -82,13 +85,12 @@ class WsClient extends React.Component<any, any> {
         this.webConn.send(msg)
     }
     onWsClose = async () => {
-        message.info(this.props.title + "连接关闭了")
+        message.info("连接关闭了")
         this.setState({
             connected: false
         })
     }
     onWsSend = async () => {
-        message.info(this.props.title + "连接关闭了")
         this.setState({
             connected: false
         })
@@ -105,8 +107,23 @@ class WsClient extends React.Component<any, any> {
         const { connected } = this.state
         return (
             <div>
-                <strong>{this.props.title}</strong>
-                <Input.TextArea value={this.state.uri} rows={3} onChange={(e) => { this.setState({ uri: e.target.value }) }} placeholder="URI" />
+                <p><strong>连接URL：</strong></p>
+                <Row style={{ marginTop: '10px' }}>
+                    <Input.TextArea value={this.state.wsUrl} rows={4} onChange={(e) => { this.setState({ wsUrl: e.target.value }) }} placeholder="URI" />
+                </Row>
+
+                <Row style={{ marginTop: '15px' }}>
+                    <Col span={24}>
+                        <Space size={[20, 10]} align="baseline">
+                            <Button onClick={this.connectWsServer} type="primary">{this.state.connected ? '断开' : '连接'}</Button>
+                            <Button type="primary" onClick={this.clearMessage}>清空消息</Button>
+                        </Space>
+                    </Col>
+                    <p>
+
+                    </p>
+                </Row>
+                <Input.TextArea value={this.state.sendmsg} rows={3} onChange={(e) => { this.setState({ sendmsg: e.target.value }) }} placeholder="发送消息" />
                 <strong>消息list</strong>
                 {this.state.messages.map((data, i) => {
                     return <div key={i}>
@@ -114,16 +131,10 @@ class WsClient extends React.Component<any, any> {
                         <Input.TextArea value={data.message} rows={3} />
                     </div>
                 })}
-                <Input.TextArea value={this.state.sendmsg} rows={3} onChange={(e) => { this.setState({ sendmsg: e.target.value }) }} placeholder="发送消息" />
-                <p style={{ marginTop: '10px', marginBottom: '10px' }}>
-                    <Button style={{ marginRight: '20px' }} type="primary" onClick={this.sendMessage}>发送消息</Button>
-                    <Button type="primary" onClick={this.clearMessage} style={{ marginRight: '20px' }}>清空消息</Button>
-                    <Button type="primary" onClick={this.closeWsServer} style={{ marginRight: '20px', display: connected ? '' : 'none' }} danger>关闭客户端</Button>
-                    <Button type="primary" onClick={this.connectWsServer} style={{ marginRight: '20px', display: connected ? 'none' : '' }}>连接客户端</Button>
-                </p>
+
             </div >
         );
     }
 }
 
-export default WsClient;
+export default Websocket;
