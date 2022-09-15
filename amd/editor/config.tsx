@@ -81,11 +81,13 @@ import Embed, { EmbedComponent } from '@aomao/plugin-embed';
 // import type { EmbedOptions } from '@aomao/plugin-embed'
 import Test, { TestComponent } from './plugins/test';
 import Lightblock, { LightblockComponent } from '@aomao/plugin-lightblock';
+/*
 import MulitCodeblock, {
 	MulitCodeblockComponent,
 } from '../../../../plugins/mulit-codeblock/src';
 
 import Tag, { TagComponent } from '../../../../plugins/tag/src';
+*/
 
 import {
 	ToolbarPlugin,
