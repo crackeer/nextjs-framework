@@ -11,6 +11,7 @@
     "start": "next start --port=9393 --hostname 0.0.0.0"
   },
   "dependencies": {
+    "@toast-ui/react-editor": "^3.2.0",
     "antd": "^4.11.2",
     "axios": "^0.21.1",
     "dayjs": "^1.10.4",
