@@ -11,7 +11,6 @@ let linklist = [
     }
 ]
 function Link() {
-
     return <div style={{margin:'0 auto', padding:'0 2%'}}>
         <Space size={[25, 50]} wrap align="baseline">
             {

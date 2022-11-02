@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, message, Input } from 'antd';
 import { Select, Row, Col } from 'antd';
-import Table from '../component/Table'
+import Table from '../../component/Table'
 const { Option } = Select;
 // 引入 ECharts 主模块
 import * as echarts from 'echarts';// 引入柱状图

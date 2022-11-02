@@ -1,7 +1,7 @@
 import React from 'react';
 
-import IFrame from '../component/IFrame'
-import merge from '../lib/merge'
+import IFrame from '../../component/IFrame'
+import merge from '../../lib/merge'
 
 let framelist = [
     {
