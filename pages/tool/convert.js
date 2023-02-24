@@ -47,7 +47,6 @@ class Convert extends React.Component {
         })
     }
     render() {
-        const { displayQRCode } = this.state
         return (
             <div>
                 <Row>
