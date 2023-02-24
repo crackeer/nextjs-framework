@@ -1333,10 +1333,10 @@
   "resolved" "https://registry.npmjs.org/date-fns/-/date-fns-2.25.0.tgz"
   "version" "2.25.0"
 
-"dayjs@^1.11.3", "dayjs@1.x":
-  "integrity" "sha512-xxwlswWOlGhzgQ4TKzASQkUhqERI3egRNqgV4ScR8wlANA/A9tZ7miXa44vTTKEq5l7vWoL5G57bG3zA+Kow0A=="
-  "resolved" "https://registry.npmjs.org/dayjs/-/dayjs-1.11.3.tgz"
-  "version" "1.11.3"
+"dayjs@^1.11.7", "dayjs@1.x":
+  "integrity" "sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ=="
+  "resolved" "https://registry.npmjs.org/dayjs/-/dayjs-1.11.7.tgz"
+  "version" "1.11.7"
 
 "debug@^2.2.0":
   "integrity" "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="
@@ -2274,6 +2274,11 @@
   "integrity" "sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc="
   "resolved" "https://registry.npmjs.org/jmespath/-/jmespath-0.15.0.tgz"
   "version" "0.15.0"
+
+"js-base64@^3.7.5":
+  "integrity" "sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA=="
+  "resolved" "https://registry.npmjs.org/js-base64/-/js-base64-3.7.5.tgz"
+  "version" "3.7.5"
 
 "js-cookie@^3.0.1":
   "integrity" "sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw=="

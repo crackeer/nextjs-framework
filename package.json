@@ -12,6 +12,7 @@
   "dependencies": {
     "antd": "^4.16.13",
     "axios": "^0.21.4",
+    "js-base64": "^3.7.5",
     "js-cookie": "^3.0.1",
     "jsoneditor": "^9.5.5",
     "next": "10.0.5",
@@ -22,6 +23,6 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.22",
-    "dayjs": "^1.11.3"
+    "dayjs": "^1.11.7"
   }
 }
