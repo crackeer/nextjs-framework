@@ -4,7 +4,7 @@ import {
     MinusOutlined,
     PlusOutlined
 } from '@ant-design/icons';
-export default function renderTable(props: any) {
+export default function renderTable(props) {
     let columns = []
     let showKeySize = 6
     if (props.showKeySize != undefined) {

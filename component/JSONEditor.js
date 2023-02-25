@@ -30,6 +30,11 @@ export default class JSONEditorX extends Component {
             this.jsoneditor.update(json);
         }
     }
+    getJSON = () => {
+        if(this.jsoneditor) {
+            return this.jsoneditor.get()
+        }
+    }
     render() {
         return (
             <div style={{height: this.props.height}} ref={elem => this.container = elem} />

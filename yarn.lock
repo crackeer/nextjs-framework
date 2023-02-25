@@ -2313,7 +2313,7 @@
   "resolved" "https://registry.npmmirror.com/json5/-/json5-2.2.3.tgz"
   "version" "2.2.3"
 
-"jsoneditor@^9.5.5":
+"jsoneditor@^9.10.0":
   "integrity" "sha512-vmVSD3ubZ8jwkiDKVW5MB5ESI/MUm4trVUw5WnT4j5FV6m81liA2YfQ0l84PlN4qJ3DCeYWFWfprOUoCjzkDhQ=="
   "resolved" "https://registry.npmmirror.com/jsoneditor/-/jsoneditor-9.10.0.tgz"
   "version" "9.10.0"
