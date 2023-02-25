@@ -28,7 +28,6 @@ class Slide extends React.Component {
     render() {
         return (
             <Menu selectedKeys={this.state.selectedKeys} mode="inline" defaultOpenKeys={['sub1', 'sub2', 'sub3', 'sub4']} theme="dark">
-                <Menu.Item key="env">当前环境：{this.state.env}</Menu.Item>
                 {this.state.allMenus.map(item => {
                     if(item.hide != undefined && item.hide) {
                         return null;

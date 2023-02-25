@@ -12,7 +12,8 @@ class ClassApp extends React.Component {
     constructor(props) {
         super(props); // 用于父子组件传值
         this.state = {
-            title: <></>,
+            title: null,
+            hasTitle : false,
             headTitle: '',
         }
     }
@@ -20,6 +21,7 @@ class ClassApp extends React.Component {
         if (this.component != null && this.component.renderPageTitle != null && this.component.renderPageTitle != undefined) {
             await this.setState({
                 title: this.component.renderPageTitle(),
+                hasTitle : true,
             })
         }
     }
@@ -34,21 +36,24 @@ class ClassApp extends React.Component {
             if (ref.renderPageTitle != null && ref.renderPageTitle != undefined) {
                 await this.setState({
                     title: ref.renderPageTitle(),
+                    hasTitle : true,
                 })
             } else if (ref.htmlTitle != null && ref.htmlTitle != undefined) {
+                alert(true)
                 await this.setState({
                     title: <h3>
                         <strong>{ref.htmlTitle()}</strong>
-                    </h3>
+                    </h3>,
+                    hasTitle : true,
                 })
-            }
+            } 
         }
     }
     render() {
-        const { Component, pageProps } = this.props
+        const { Component, pageProps, hasTitle } = this.props
         return <>
             <Head>
-                <title>{this.state.headTitle || 'admin后台'}</title>
+                <title>{this.state.headTitle || 'NextJs Framework'}</title>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width,initial-scale=0,maximum-scale=0,user-scalable=yes,shrink-to-fit=yes" />
             </Head>
@@ -57,10 +62,14 @@ class ClassApp extends React.Component {
                     <LeftSlide ref={(ele) => { this.slider = ele }} />
                 </Col>
                 <Col span={20} style={{ padding: '20px 20px 100px 0' }}>
-                    <div ref={r => this.headerRef = r}>
-                        {this.state.title}
-                    </div>
-                    <Divider style={{ margin: '0 0 20px' }}></Divider>
+                    {
+                        this.state.hasTitle ? <>
+                            <div>
+                                {this.state.title}
+                            </div>
+                            <Divider style={{ margin: '0 0 20px' }}></Divider>
+                        </> : null
+                    }
                     <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
                     <div id="json-id"></div>
                 </Col>
