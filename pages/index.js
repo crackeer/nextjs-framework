@@ -28,13 +28,6 @@ class Home extends React.Component {
             shepherdEnv: localStorage.getItem("shepherd-env") || '',
         })
     }
-    logout = async () => {
-        let result = await APIOpen.getLogoutURL()
-        if (result.code == 0) {
-            window.location.href = result.data.logout_url
-        }
-
-    }
     htmlTitle = () => {
         return "首页"
     }
