@@ -39,7 +39,6 @@ class ClassApp extends React.Component {
                     hasTitle : true,
                 })
             } else if (ref.htmlTitle != null && ref.htmlTitle != undefined) {
-                alert(true)
                 await this.setState({
                     title: <h3>
                         <strong>{ref.htmlTitle()}</strong>

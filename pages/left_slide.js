@@ -11,7 +11,6 @@ class Slide extends React.Component {
         this.state = {
             selectedKeys: [],
             env: '',
-            shepherdHost: '',
             allMenus : [],
         }
     }
