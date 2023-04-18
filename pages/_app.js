@@ -4,7 +4,8 @@ import { Divider, Row, Col } from 'antd';
 import LeftSlide from './left_slide';
 import React from 'react';
 import Head from 'next/head'
-
+import { Layout, Menu, theme } from 'antd';
+const { Header, Content, Footer, Sider } = Layout;
 class ClassApp extends React.Component {
     component = null
     slider = null
@@ -13,7 +14,7 @@ class ClassApp extends React.Component {
         super(props); // 用于父子组件传值
         this.state = {
             title: null,
-            hasTitle : false,
+            hasTitle: false,
             headTitle: '',
         }
     }
@@ -21,7 +22,7 @@ class ClassApp extends React.Component {
         if (this.component != null && this.component.renderPageTitle != null && this.component.renderPageTitle != undefined) {
             await this.setState({
                 title: this.component.renderPageTitle(),
-                hasTitle : true,
+                hasTitle: true,
             })
         }
     }
@@ -36,16 +37,16 @@ class ClassApp extends React.Component {
             if (ref.renderPageTitle != null && ref.renderPageTitle != undefined) {
                 await this.setState({
                     title: ref.renderPageTitle(),
-                    hasTitle : true,
+                    hasTitle: true,
                 })
             } else if (ref.htmlTitle != null && ref.htmlTitle != undefined) {
                 await this.setState({
                     title: <h3>
                         <strong>{ref.htmlTitle()}</strong>
                     </h3>,
-                    hasTitle : true,
+                    hasTitle: true,
                 })
-            } 
+            }
         }
     }
     render() {
@@ -56,23 +57,34 @@ class ClassApp extends React.Component {
                 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width,initial-scale=0,maximum-scale=0,user-scalable=yes,shrink-to-fit=yes" />
             </Head>
-            <Row style={{ 'background': '#f0f2f5' }}>
-                <Col span={4} style={{ padding: '0 20px 0 0 ' }}>
+            <Layout hasSider>
+                <Sider
+                    style={{
+                        overflow: 'auto',
+                        height: '100vh',
+                        position: 'fixed',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                    }}
+                >
                     <LeftSlide ref={(ele) => { this.slider = ele }} />
-                </Col>
-                <Col span={20} style={{ padding: '20px 20px 100px 0' }}>
-                    {
-                        this.state.hasTitle ? <>
-                            <div>
-                                {this.state.title}
-                            </div>
-                            <Divider style={{ margin: '0 0 20px' }}></Divider>
-                        </> : null
-                    }
-                    <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
-                    <div id="json-id"></div>
-                </Col>
-            </Row>
+                </Sider>
+                <Layout className="site-layout" style={{ marginLeft: 220 }}>
+                    <Content  style={{ padding: '20px 20px 100px 0' }}>
+                        {
+                            this.state.hasTitle ? <>
+                                <div>
+                                    {this.state.title}
+                                </div>
+                                <Divider style={{ margin: '0 0 20px' }}></Divider>
+                            </> : null
+                        }
+                        <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
+                        <div id="json-id"></div>
+                    </Content>
+                </Layout>
+            </Layout>
         </>
     }
 }

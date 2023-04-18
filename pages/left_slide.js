@@ -1,6 +1,5 @@
 import React from 'react';
 import { Menu } from 'antd';
-import { getEnv } from '../lib/env';
 import { getSlideMenu } from '../lib/menu';
 
 const { SubMenu } = Menu;
