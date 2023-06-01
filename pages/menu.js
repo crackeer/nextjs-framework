@@ -1,6 +1,4 @@
-import { getRealPath } from "./router"
-import { getEnv } from "./env"
-
+import { getRealPath } from "../lib/router"
 
 let allMenus = [
     {
@@ -37,10 +35,10 @@ let allMenus = [
     }
 ]
 
-function getSlideMenu() {
-    let currentEnv = getEnv();
+
+ const getMenu =  (currentEnv) => {
     let raws = JSON.stringify(allMenus)
-    let menuCopy = JSON.parse(raws)
+    let menuCopy = JSON.parse(JSON.stringify(allMenus))
 
     for (var i in menuCopy) {
         if (menuCopy[i].href != undefined && menuCopy[i].key != undefined) {
@@ -67,6 +65,4 @@ function getSlideMenu() {
     return menuCopy
 }
 
-export {
-    getSlideMenu
-}
+export default getMenu
