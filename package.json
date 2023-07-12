@@ -10,6 +10,7 @@
     "start": "next start --port=9393 --hostname 0.0.0.0"
   },
   "dependencies": {
+    "@marktext/muya": "^0.0.31",
     "@mdx-js/loader": "^2.3.0",
     "@next/mdx": "^13.2.1",
     "antd": "^4.16.13",
