@@ -9,24 +9,28 @@ npm install
 npm run dev
 ```
 
-浏览器打开 [http://localhost:3000](http://localhost:3000)。页面入口在 `pages/` 目录下，编辑后自动热更新。
+浏览器打开 [http://localhost:9393](http://localhost:9393)（开发/生产共用 `server.js`，可通过 `PORT` 环境变量覆盖）。页面入口在 `pages/` 目录下，编辑后自动热更新。
 
 ## 部署（Node 服务）
 
-采用 Next.js 标准的 Node 部署方式：先构建生产产物，再用 `next start` 启动 Node 服务。
+服务通过根目录的 [server.js](server.js)（Next.js custom server）单文件启动，先构建生产产物再启动：
 
 ```bash
 npm run build
-npm start
+npm start          # 等价于 node server.js
 ```
 
-默认监听 `0.0.0.0:9393`（见 `package.json` 中 `start` 脚本，可按需修改端口）。
+默认监听 `0.0.0.0:9393`，可通过环境变量覆盖：
+
+```bash
+PORT=8080 HOST=127.0.0.1 npm start
+```
 
 生产环境通常配合进程管理器（如 PM2）使用：
 
 ```bash
 npm run build
-pm2 start npm --name next-demo -- start
+pm2 start server.js --name next-demo
 ```
 
 如需在容器中部署，典型 Dockerfile 片段：
@@ -39,7 +43,7 @@ RUN npm ci --omit=dev
 COPY . .
 RUN npm run build
 EXPOSE 9393
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
 ```
 
 ## 目录结构
