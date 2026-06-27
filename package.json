@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=development node server.js",
+    "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js"
+    "postbuild": "node scripts/postbuild.js",
+    "start": "node .next/standalone/server.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",

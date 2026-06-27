@@ -9,41 +9,53 @@ npm install
 npm run dev
 ```
 
-浏览器打开 [http://localhost:9393](http://localhost:9393)（开发/生产共用 `server.js`，可通过 `PORT` 环境变量覆盖）。页面入口在 `pages/` 目录下，编辑后自动热更新。
+浏览器打开 [http://localhost:3000](http://localhost:3000)。页面入口在 `pages/` 目录下，编辑后自动热更新。
 
-## 部署（Node 服务）
+## 部署（standalone 模式）
 
-服务通过根目录的 [server.js](server.js)（Next.js custom server）单文件启动，先构建生产产物再启动：
-
-```bash
-npm run build
-npm start          # 等价于 node server.js
-```
-
-默认监听 `0.0.0.0:9393`，可通过环境变量覆盖：
+项目已开启 Next.js 的 `output: 'standalone'`（见 [next.config.js](next.config.js)）。构建后会生成一个**自包含的最小化运行包** `.next/standalone/`，内含精简后的 `node_modules` 与入口 `server.js`，复制到任何装了 Node 的机器即可直接运行，无需再 `npm install`。
 
 ```bash
-PORT=8080 HOST=127.0.0.1 npm start
+npm run build       # 构建并自动执行 postbuild：把 public/ 和 .next/static 复制进 standalone
+npm start           # 等价于 node .next/standalone/server.js
 ```
 
-生产环境通常配合进程管理器（如 PM2）使用：
+默认监听 `0.0.0.0:3000`，可通过环境变量覆盖端口 / 主机：
 
 ```bash
-npm run build
-pm2 start server.js --name next-demo
+PORT=9393 HOSTNAME=0.0.0.0 npm start
 ```
 
-如需在容器中部署，典型 Dockerfile 片段：
+> 说明：standalone 产物默认不含 `public/` 与 `.next/static`，由 [scripts/postbuild.js](scripts/postbuild.js) 在构建后自动补齐，无需手动处理。
+
+### Docker 部署
+
+利用 standalone 模式可得到极小的运行镜像（只复制 standalone 产物，无需在运行镜像里装依赖）：
 
 ```dockerfile
-FROM node:20-alpine
+# ---------- 1. 构建阶段 ----------
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 COPY . .
 RUN npm run build
+
+# ---------- 2. 运行阶段 ----------
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=9393
+ENV HOSTNAME=0.0.0.0
+# standalone 已自带精简 node_modules、public、.next/static
+COPY --from=builder /app/.next/standalone ./
 EXPOSE 9393
 CMD ["node", "server.js"]
+```
+
+```bash
+docker build -t next-demo .
+docker run -p 9393:9393 next-demo
 ```
 
 ## 目录结构
@@ -54,9 +66,11 @@ component/   # 通用组件（JSONEditor / JSONView / Table / WsClient …）
 lib/         # 工具库（router / util / json）
 pages/       # Next.js 页面
 public/      # 静态资源
+scripts/     # 构建辅助脚本（postbuild）
 styles/      # 全局样式
 ```
 
 ## 了解更多
 
 - [Next.js 文档](https://nextjs.org/docs) — 了解 Next.js 的特性与 API。
+- [Next.js standalone 模式](https://nextjs.org/docs/app/api-reference/next-config-js/output) — standalone 输出说明。
