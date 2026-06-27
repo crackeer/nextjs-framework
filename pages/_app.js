@@ -1,55 +1,51 @@
 import '../styles/globals.css'
-import { Divider, FloatButton, Layout,Menu } from 'antd';
+import { Divider, FloatButton, Layout, Menu } from 'antd';
 import React from 'react';
 import Head from 'next/head'
-const { Sider } = Layout;
 import { getCurrentEnv } from '../lib/util';
 import getMenu from "./menu"
-const { SubMenu } = Menu;
 
-function getMarginLeft(value) {
-    if (value) {
-        return "80px"
+const { Header, Sider } = Layout;
+
+// 根据当前路径反查所属的顶部一级菜单 key
+function getTopKeyByPath(menus, path) {
+    for (let item of menus) {
+        if (item.hide) continue
+        if (item.submenu) {
+            if (item.submenu.some(sub => !sub.hide && sub.key === path)) return item.key
+        } else if (item.key === path) {
+            return item.key
+        }
     }
-    return "200px"
+    return ''
 }
+
 class ClassApp extends React.Component {
     component = null
     headerRef = null
-    openKeys = []
     constructor(props) {
         super(props); // 用于父子组件传值
         this.state = {
+            inited: false,
             title: <></>,
             headTitle: '',
-            collapsed: null,
-            marginLeft: '',
-
+            collapsed: false,
             selectedKeys: [],
-            env: '',
+            topSelectedKey: '',
             allMenus: [],
-            openKeys: [],
         }
     }
     componentDidMount = async () => {
         let collapsed = localStorage.getItem('collapsed') > 0
         let env = getCurrentEnv()
         let menus = getMenu(env)
-        let openKeys = []
-        menus.forEach(item => {
-            openKeys.push(item.key)
-        })
-        this.openKeys = JSON.parse(JSON.stringify(openKeys))
-        if (collapsed) {
-            openKeys = []
-        }
+        let path = window.location.pathname
         await this.setState({
-            selectedKeys: [window.location.pathname],
-            env: env,
+            inited: true,
+            selectedKeys: [path],
+            topSelectedKey: getTopKeyByPath(menus, path),
             allMenus: menus,
-            openKeys: openKeys,
             collapsed: collapsed,
-            marginLeft: getMarginLeft(collapsed)
         });
     }
     updateTitle = async () => {
@@ -81,70 +77,82 @@ class ClassApp extends React.Component {
         }
     }
     setCollapse = async (value) => {
-        await this.setState({
-            collapsed: value,
-            marginLeft: getMarginLeft(value),
-            openKeys : value ? this.state.openKeys : this.openKeys,
-        })
+        await this.setState({ collapsed: value })
         localStorage.setItem('collapsed', value ? '1' : '0')
+    }
+    onTopMenuClick = ({ key }) => {
+        // 点击带子菜单的顶部项时仅切换左侧子导航，不跳转（这类项没有 href）
+        const item = this.state.allMenus.find(m => m.key === key)
+        if (item && item.submenu) {
+            this.setState({ topSelectedKey: key })
+        }
     }
     render() {
         const { Component, pageProps } = this.props
-        if (this.state.collapsed == null) {
+        if (!this.state.inited) {
             return null
         }
+        const { allMenus, topSelectedKey, selectedKeys, collapsed } = this.state
+        const topMenus = allMenus.filter(item => !item.hide)
+        const activeTop = topMenus.find(item => item.key === topSelectedKey)
+        const subMenus = activeTop && activeTop.submenu ? activeTop.submenu.filter(s => !s.hide) : []
+        const showSider = subMenus.length > 0
+
         return <>
             <Head>
                 <title>{this.state.headTitle || 'admin后台'}</title>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width,initial-scale=0,maximum-scale=0,user-scalable=yes,shrink-to-fit=yes" />
             </Head>
-            <Layout hasSider>
-                <Sider
-                    style={{
-                        overflow: 'auto',
-                        height: '100vh',
-                        position: 'fixed',
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                    }}
-                    collapsible
-                    collapsed={this.state.collapsed}
-                    onCollapse={this.setCollapse}
-                >
-                    <Menu selectedKeys={this.state.selectedKeys} mode="inline" theme="dark" openKeys={this.state.openKeys} onOpenChange={(value) => { this.setState({ openKeys: value }) }} style={{paddingBottom:'50px'}}>
-                        {this.state.allMenus.map(item => {
-                            if (item.hide != undefined && item.hide) {
-                                return null;
-                            }
-                            if (item.submenu == undefined) {
-                                return <Menu.Item key={item.key} icon={item.icon}>
-                                    <a href={item.href}>{item.title}</a>
-                                </Menu.Item>
-                            }
-                            return <SubMenu key={item.key} icon={item.icon} title={item.title}>
-                                {item.submenu.map(item2 => {
-                                    if (item2.hide != undefined && item2.hide) {
-                                        return null;
-                                    }
-                                    return <Menu.Item key={item2.key}>
-                                        <a href={item2.href}>{item2.title}</a>
-                                    </Menu.Item>
-                                })
-                                }
-                            </SubMenu>
-                        })}
+            <Layout style={{ minHeight: '100vh' }}>
+                <Header style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ color: '#fff', fontSize: 18, fontWeight: 600, marginRight: 32, whiteSpace: 'nowrap' }}>Admin后台</div>
+                    <Menu
+                        theme="dark"
+                        mode="horizontal"
+                        selectedKeys={[topSelectedKey]}
+                        onClick={this.onTopMenuClick}
+                        style={{ flex: 1, minWidth: 0, background: 'transparent' }}
+                    >
+                        {topMenus.map(item => (
+                            <Menu.Item key={item.key}>
+                                {item.submenu ? item.title : <a href={item.href}>{item.title}</a>}
+                            </Menu.Item>
+                        ))}
                     </Menu>
-                </Sider>
-                <Layout className="site-layout" style={{ marginLeft: this.state.marginLeft, padding: '20px 20px 50px' }}>
-                    <div ref={r => this.headerRef = r}>
-                        {this.state.title}
-                    </div>
-                    <Divider style={{ margin: '0 0 20px' }}></Divider>
-                    <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
-                    <div id="json-id"></div>
-                    <FloatButton.BackTop />
+                </Header>
+                <Layout hasSider>
+                    {showSider && (
+                        <Sider
+                            collapsible
+                            collapsed={collapsed}
+                            onCollapse={this.setCollapse}
+                            width={200}
+                            theme="light"
+                        >
+                            <Menu
+                                mode="inline"
+                                theme="light"
+                                selectedKeys={selectedKeys}
+                                style={{ height: '100%', borderRight: 0 }}
+                            >
+                                {subMenus.map(item => (
+                                    <Menu.Item key={item.key}>
+                                        <a href={item.href}>{item.title}</a>
+                                    </Menu.Item>
+                                ))}
+                            </Menu>
+                        </Sider>
+                    )}
+                    <Layout className="site-layout" style={{ padding: '20px 20px 50px' }}>
+                        <div ref={r => this.headerRef = r}>
+                            {this.state.title}
+                        </div>
+                        <Divider style={{ margin: '0 0 20px' }}></Divider>
+                        <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
+                        <div id="json-id"></div>
+                        <FloatButton.BackTop />
+                    </Layout>
                 </Layout>
             </Layout>
 
