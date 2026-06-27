@@ -26,23 +26,49 @@ export default function OssPage() {
 function OssPageInner() {
     const searchParams = useSearchParams();
     const host = searchParams.get('host');
+    const [buckets, setBuckets] = useState([]);
+    const [bucket, setBucket] = useState('');
     const [path, setPath] = useState('/');
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selected, setSelected] = useState(null);
     const fileInputRef = useRef(null);
 
-    // 切换 host 时回到根目录
+    // 拉取主机下的 buckets 列表
     useEffect(() => {
-        if (host) setPath('/');
+        if (!host) {
+            setBuckets([]);
+            setBucket('');
+            return;
+        }
+        fetch(`/api/oss/hosts`)
+            .then((r) => r.json())
+            .then((data) => {
+                const h = (data.hosts || []).find((x) => x.name === host);
+                const list = h?.buckets || [];
+                setBuckets(list);
+                // 默认选第一个
+                setBucket(list[0] || '');
+            })
+            .catch(() => {
+                setBuckets([]);
+                setBucket('');
+            });
     }, [host]);
 
+    // 切换 host 或 bucket 时回到根目录
+    useEffect(() => {
+        setPath('/');
+    }, [host, bucket]);
+
     const fetchList = useCallback(async () => {
-        if (!host) return;
+        if (!host || !bucket) return;
         setLoading(true);
         setSelected(null);
         try {
-            const resp = await fetch(`/api/oss/${encodeURIComponent(host)}/list?path=${encodeURIComponent(path)}`);
+            const resp = await fetch(
+                `/api/oss/${encodeURIComponent(host)}/list?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`
+            );
             const data = await resp.json();
             if (!resp.ok) {
                 toast.error(data.error || '读取目录失败');
@@ -55,7 +81,7 @@ function OssPageInner() {
         } finally {
             setLoading(false);
         }
-    }, [host, path]);
+    }, [host, bucket, path]);
 
     useEffect(() => {
         fetchList();
@@ -80,7 +106,7 @@ function OssPageInner() {
 
     // 下载
     const onDownload = (item) => {
-        const url = `/api/oss/${encodeURIComponent(host)}/download?path=${encodeURIComponent(joinPath(item.name))}`;
+        const url = `/api/oss/${encodeURIComponent(host)}/download?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(joinPath(item.name))}`;
         const a = document.createElement('a');
         a.href = url;
         a.download = item.name;
@@ -98,6 +124,7 @@ function OssPageInner() {
             const fd = new FormData();
             fd.append('file', file);
             fd.append('path', path);
+            fd.append('bucket', bucket);
             const resp = await fetch(`/api/oss/${encodeURIComponent(host)}/upload`, {
                 method: 'POST',
                 body: fd,
@@ -125,7 +152,7 @@ function OssPageInner() {
             const resp = await fetch(`/api/oss/${encodeURIComponent(host)}/delete`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ path: joinPath(item.name), isDir: item.isDirectory }),
+                body: JSON.stringify({ bucket, path: joinPath(item.name), isDir: item.isDirectory }),
             });
             const data = await resp.json();
             if (!resp.ok) {
@@ -147,7 +174,7 @@ function OssPageInner() {
             const resp = await fetch(`/api/oss/${encodeURIComponent(host)}/rename`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ from: joinPath(item.name), to: joinPath(newName) }),
+                body: JSON.stringify({ bucket, from: joinPath(item.name), to: joinPath(newName) }),
             });
             const data = await resp.json();
             if (!resp.ok) {
@@ -179,6 +206,24 @@ function OssPageInner() {
             <div className="space-y-3">
                 {/* 工具栏 */}
                 <div className="flex flex-wrap items-center gap-2">
+                    {/* Bucket 选择器 */}
+                    <select
+                        value={bucket}
+                        onChange={(e) => setBucket(e.target.value)}
+                        className="h-9 px-2 rounded-md border bg-background text-sm"
+                        title="选择 Bucket"
+                    >
+                        {buckets.length === 0 ? (
+                            <option value="">无 Bucket</option>
+                        ) : (
+                            buckets.map((b) => (
+                                <option key={b} value={b}>
+                                    {b}
+                                </option>
+                            ))
+                        )}
+                    </select>
+
                     <button
                         onClick={() => setPath('/')}
                         className="p-1.5 rounded-md border hover:bg-accent"
@@ -221,7 +266,8 @@ function OssPageInner() {
                     </button>
                     <button
                         onClick={onUploadClick}
-                        className="flex items-center gap-1 px-2 py-1.5 rounded-md bg-primary text-primary-foreground text-sm hover:bg-primary/90"
+                        disabled={!bucket}
+                        className="flex items-center gap-1 px-2 py-1.5 rounded-md bg-primary text-primary-foreground text-sm hover:bg-primary/90 disabled:opacity-40"
                     >
                         <Upload className="h-4 w-4" />
                         <span className="hidden sm:inline">上传</span>
@@ -246,7 +292,13 @@ function OssPageInner() {
                             </tr>
                         </thead>
                         <tbody>
-                            {loading ? (
+                            {!bucket ? (
+                                <tr>
+                                    <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">
+                                        请先选择一个 Bucket
+                                    </td>
+                                </tr>
+                            ) : loading ? (
                                 <tr>
                                     <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">
                                         加载中…
@@ -327,7 +379,7 @@ function OssPageInner() {
                     </table>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                    提示：双击目录进入，单击行选中
+                    提示：双击目录进入，单击行选中；切换 Bucket 会回到根目录
                 </div>
             </div>
         </PageHeader>

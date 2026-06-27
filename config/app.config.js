@@ -18,6 +18,8 @@
  *             username  登录用户名
  *             password  密码（与 privateKey 二选一）
  *             privateKey 私钥内容（PEM 格式字符串）
+ *   ftp      FTP 服务器列表
+ *   oss      对象存储配置列表（S3 兼容协议）
  * ------------------------------------------------------------------
  */
 module.exports = {
@@ -72,7 +74,7 @@ module.exports = {
     // 对象存储配置列表（S3 兼容协议）：在顶部导航 Oss 下拉中选择连接
     // 兼容 AWS S3 / 阿里云 OSS / 腾讯云 COS / MinIO / Cloudflare R2 等
     //   region            区域，如 'us-east-1'；阿里云填 'oss-cn-hangzhou'
-    //   bucket            存储空间名
+    //   buckets           存储空间名列表（数组），页面可切换；也兼容单字符串 bucket
     //   accessKeyId       AccessKey ID
     //   accessKeySecret   AccessKey Secret
     //   endpoint          可选，S3 兼容端点（阿里云/MinIO/腾讯云需填写）
@@ -82,7 +84,7 @@ module.exports = {
         // {
         //     name: 'aws-s3',
         //     region: 'us-east-1',
-        //     bucket: 'my-bucket',
+        //     buckets: ['bucket-a', 'bucket-b'],
         //     accessKeyId: 'AKIA...',
         //     accessKeySecret: '...',
         // },
@@ -90,7 +92,7 @@ module.exports = {
         // {
         //     name: 'ali-oss',
         //     region: 'oss-cn-hangzhou',
-        //     bucket: 'my-bucket',
+        //     buckets: ['my-bucket', 'backup-bucket'],
         //     accessKeyId: 'your-access-key-id',
         //     accessKeySecret: 'your-access-key-secret',
         //     endpoint: 'https://oss-cn-hangzhou.aliyuncs.com',
@@ -99,7 +101,7 @@ module.exports = {
         // {
         //     name: 'minio',
         //     region: 'us-east-1',
-        //     bucket: 'my-bucket',
+        //     buckets: ['my-bucket'],
         //     accessKeyId: 'minioadmin',
         //     accessKeySecret: 'minioadmin',
         //     endpoint: 'http://192.168.1.10:9000',
