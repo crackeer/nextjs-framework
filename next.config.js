@@ -8,7 +8,7 @@ const nextConfig = {
     // 便于直接复制到镜像或服务器单独运行，无需再 npm install
     output: 'standalone',
     // 允许开发模式下从这些来源访问（预览/本地 IP），避免 HMR 跨域被拦截
-    allowedDevOrigins: ['127.0.0.1', 'localhost'],
+    allowedDevOrigins: ['127.0.0.1', 'localhost', '*.trae.cn'],
 };
 
 const withMDX = createMDX({});
