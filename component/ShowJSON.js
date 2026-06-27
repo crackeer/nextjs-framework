@@ -1,21 +1,23 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React from 'react';
 import JSONView from './JSONView'
 import { Modal, } from 'antd';
 
+let root = null
+function getRoot() {
+    if (root == null) {
+        root = createRoot(document.getElementById('json-id'))
+    }
+    return root
+}
 function showJSON(title, data) {
-    let dom = ReactDOM.render(
-        <ModelJSON data={data} title={title} show={true}/>,
-        document.getElementById('json-id')
-    )
-    dom.show()
+    getRoot().render(<ModelJSON data={data} title={title} show={true}/>)
 }
 
 function hideJSON(title, data) {
-    ReactDOM.render(
-        <></>,
-        document.getElementById('json-id')
-    )
+    if (root != null) {
+        root.render(<></>)
+    }
 }
 
 export  {
@@ -35,7 +37,7 @@ class ModelJSON extends React.Component {
         })
     }
     render() {
-       return <Modal title={this.props.title} visible={this.state.show} okText="确认" onOk={() => {
+       return <Modal title={this.props.title} open={this.state.show} okText="确认" onOk={() => {
             this.setState({
                 show: false
             })
@@ -43,7 +45,7 @@ class ModelJSON extends React.Component {
             this.setState({
                 show: false
             })
-        }} width="60%" bodyStyle={{ padding: '1px 10px' }}>
+        }} width="60%" styles={{ body: { padding: '1px 10px' } }}>
             <JSONView str={this.props.data} />
         </Modal>
     }

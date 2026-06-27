@@ -2,7 +2,6 @@ import React from 'react';
 import { Collapse, Input, Card, Divider, Button, Tabs, message } from 'antd';
 
 const { Panel } = Collapse;
-const { TabPane } = Tabs;
 
 class WsClient extends React.Component {
     webConn = null

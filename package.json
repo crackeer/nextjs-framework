@@ -5,26 +5,28 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "npm run build --export=1 && next export && cd out && ls | xargs tar -zcvf admin.tar.gz && mv admin.tar.gz ../ && cd ../ && rm -rf out",
-    "simple-export": "npm run build --export=1 && next export",
+    "export": "EXPORT=1 next build && cd out && ls | xargs tar -zcvf admin.tar.gz && mv admin.tar.gz ../ && cd ../ && rm -rf out",
+    "simple-export": "EXPORT=1 next build",
     "start": "next start --port=9393 --hostname 0.0.0.0"
   },
   "dependencies": {
-    "@mdx-js/loader": "^2.3.0",
-    "@next/mdx": "^13.2.1",
-    "antd": "^4.16.13",
-    "axios": "^0.21.4",
-    "js-base64": "^3.7.5",
-    "js-cookie": "^3.0.1",
-    "next": "10.0.5",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-json-view": "^1.20.4",
-    "sharp": "^0.28.3"
+    "@ant-design/icons": "^6.0.0",
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@microlink/react-json-view": "^1.31.20",
+    "@next/mdx": "^16.2.9",
+    "antd": "^6.4.5",
+    "axios": "^1.18.1",
+    "dayjs": "^1.11.21",
+    "js-base64": "^3.8.0",
+    "js-cookie": "^3.0.8",
+    "jsoneditor": "^10.4.3",
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "sharp": "^0.35.2"
   },
   "devDependencies": {
-    "@types/react": "^18.0.22",
-    "dayjs": "^1.11.7",
-    "jsoneditor": "^9.10.0"
+    "@types/react": "^19.2.17"
   }
 }

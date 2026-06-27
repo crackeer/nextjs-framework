@@ -1,6 +1,5 @@
 import '../styles/globals.css'
-import 'antd/dist/antd.css';
-import { Divider, BackTop, Layout,Menu } from 'antd';
+import { Divider, FloatButton, Layout,Menu } from 'antd';
 import React from 'react';
 import Head from 'next/head'
 const { Sider } = Layout;
@@ -145,7 +144,7 @@ class ClassApp extends React.Component {
                     <Divider style={{ margin: '0 0 20px' }}></Divider>
                     <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
                     <div id="json-id"></div>
-                    <BackTop duration={1000} />
+                    <FloatButton.BackTop />
                 </Layout>
             </Layout>
 

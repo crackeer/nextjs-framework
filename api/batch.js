@@ -15,7 +15,7 @@ export default {
                 }
             }))
         }
-        let results = await axios.all(requests)
+        let results = await Promise.all(requests)
         let retData = {}
         for (var i in workIDs) {
             if (results[i].data.code == 0) {

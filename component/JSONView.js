@@ -18,7 +18,7 @@ export default function renderJSON(props) {
     if (props.collapsed != undefined) {
         collapsed = props.collapsed
     }
-    const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
+    const ReactJson = dynamic(() => import('@microlink/react-json-view'), { ssr: false });
 
     return <ReactJson src={jsonObj} displayDataTypes={false} iconStyle={'square'} name={false} displayObjectSize={false} collapsed={collapsed}/>
 }
