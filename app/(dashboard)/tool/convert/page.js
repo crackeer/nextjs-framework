@@ -1,21 +1,19 @@
+'use client';
 import React from 'react';
-import { Button } from '../../components/ui/button';
-import { Textarea } from '../../components/ui/textarea';
+import { Button } from '../../../../components/ui/button';
+import { Textarea } from '../../../../components/ui/textarea';
 import { Base64 } from 'js-base64';
 import dayjs from 'dayjs';
+import PageHeader from '../../../../components/PageHeader';
 
 class Convert extends React.Component {
     constructor(props) {
-        super(props); // 用于父子组件传值
+        super(props);
         this.state = {
             input: '',
             output: '',
         };
     }
-    componentDidMount = async () => {};
-    htmlTitle = () => {
-        return '转码';
-    };
 
     do = async (tool) => {
         const { input } = this.state;
@@ -74,4 +72,10 @@ class Convert extends React.Component {
     }
 }
 
-export default Convert;
+export default function Page() {
+    return (
+        <PageHeader title="转码">
+            <Convert />
+        </PageHeader>
+    );
+}

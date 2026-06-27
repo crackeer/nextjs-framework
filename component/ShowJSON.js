@@ -1,3 +1,4 @@
+'use client';
 import { createRoot } from 'react-dom/client';
 import React from 'react';
 import JSONView from './JSONView';

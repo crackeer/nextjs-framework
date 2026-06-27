@@ -1,15 +1,13 @@
+'use client';
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import PageHeader from '../../components/PageHeader';
 
 class Home extends React.Component {
-    form = null;
     constructor(props) {
-        super(props); // 用于父子组件传值
+        super(props);
         this.state = {};
     }
-    htmlTitle = () => {
-        return '首页';
-    };
     render() {
         return (
             <div className="grid grid-cols-1 gap-4">
@@ -24,4 +22,10 @@ class Home extends React.Component {
     }
 }
 
-export default Home;
+export default function Page() {
+    return (
+        <PageHeader title="首页">
+            <Home />
+        </PageHeader>
+    );
+}

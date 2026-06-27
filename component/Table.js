@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import JSONView from './JSONView';

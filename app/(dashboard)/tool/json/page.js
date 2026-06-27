@@ -1,0 +1,55 @@
+'use client';
+import React from 'react';
+import JSONEditor from '../../../../component/JSONEditor';
+import PageHeader from '../../../../components/PageHeader';
+
+class JsonPage extends React.Component {
+    jsonObject = null;
+    constructor(props) {
+        super(props);
+        this.state = {
+            json: {},
+        };
+    }
+    componentDidMount = async () => {
+        await this.setState({
+            json: this.getLocalJSONValue(),
+        });
+        setTimeout(() => {
+            this.jsonObject.setJSON(this.state.json);
+        }, 800);
+    };
+    getLocalJSONValue = () => {
+        try {
+            let value = localStorage.getItem('json-local-value') || '';
+            return JSON.parse(value);
+        } catch (e) {
+            return {};
+        }
+    };
+    setLocalJSONValue = (value) => {
+        let raws = JSON.stringify(value);
+        localStorage.setItem('json-local-value', raws);
+    };
+    render() {
+        return (
+            <div>
+                <JSONEditor
+                    height={'calc(100vh - 100px)'}
+                    ref={(e) => {
+                        this.jsonObject = e;
+                    }}
+                    onValidate={(val) => this.setLocalJSONValue(val)}
+                />
+            </div>
+        );
+    }
+}
+
+export default function Page() {
+    return (
+        <PageHeader title="JSON编辑">
+            <JsonPage />
+        </PageHeader>
+    );
+}

@@ -1,8 +1,9 @@
+'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
 import {
     Card,
     CardHeader,
@@ -10,7 +11,7 @@ import {
     CardDescription,
     CardContent,
     CardFooter,
-} from '../components/ui/card';
+} from '../../components/ui/card';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -34,7 +35,9 @@ export default function LoginPage() {
                 return;
             }
             toast.success('登录成功');
-            const next = typeof router.query.next === 'string' ? router.query.next : '/';
+            // 读取 ?next= 参数，登录成功后跳转
+            const params = new URLSearchParams(window.location.search);
+            const next = params.get('next') || '/';
             router.replace(next);
         } catch (err) {
             toast.error('网络错误：' + err.message);
