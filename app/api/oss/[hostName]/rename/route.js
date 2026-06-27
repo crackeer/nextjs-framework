@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getOssClient, rename } from '../../../../../lib/oss';
+import { getS3Client, rename } from '../../../../../lib/oss';
 
-// 重命名：POST JSON { from, to }（OSS 用 copy + delete 实现）
+// 重命名：POST JSON { from, to }（S3 用 copy + delete 实现）
 export async function POST(request, context) {
     const { hostName } = await context.params;
-    const client = getOssClient(hostName);
-    if (!client) {
+    const ctx = getS3Client(hostName);
+    if (!ctx) {
         return NextResponse.json({ error: `未知的 OSS 主机: ${hostName}` }, { status: 404 });
     }
     try {
@@ -13,7 +13,7 @@ export async function POST(request, context) {
         if (!from || !to) {
             return NextResponse.json({ error: '缺少 from 或 to' }, { status: 400 });
         }
-        await rename(client, from, to);
+        await rename(ctx, from, to);
         return NextResponse.json({ ok: true });
     } catch (err) {
         return NextResponse.json({ error: err.message }, { status: 500 });

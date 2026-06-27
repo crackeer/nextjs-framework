@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getOssClient, removeFile, removeDir } from '../../../../../lib/oss';
+import { getS3Client, removeFile, removeDir } from '../../../../../lib/oss';
 
 // 删除文件或目录：POST JSON { path, isDir }
 export async function POST(request, context) {
     const { hostName } = await context.params;
-    const client = getOssClient(hostName);
-    if (!client) {
+    const ctx = getS3Client(hostName);
+    if (!ctx) {
         return NextResponse.json({ error: `未知的 OSS 主机: ${hostName}` }, { status: 404 });
     }
     try {
@@ -14,9 +14,9 @@ export async function POST(request, context) {
             return NextResponse.json({ error: '缺少 path' }, { status: 400 });
         }
         if (isDir) {
-            await removeDir(client, path);
+            await removeDir(ctx, path);
         } else {
-            await removeFile(client, path);
+            await removeFile(ctx, path);
         }
         return NextResponse.json({ ok: true });
     } catch (err) {

@@ -69,15 +69,41 @@ module.exports = {
         // },
     ],
 
-    // 阿里云 OSS 配置列表：在顶部导航 Oss 下拉中选择连接
-    // region 形如 'oss-cn-hangzhou'；bucket 为存储空间名
+    // 对象存储配置列表（S3 兼容协议）：在顶部导航 Oss 下拉中选择连接
+    // 兼容 AWS S3 / 阿里云 OSS / 腾讯云 COS / MinIO / Cloudflare R2 等
+    //   region            区域，如 'us-east-1'；阿里云填 'oss-cn-hangzhou'
+    //   bucket            存储空间名
+    //   accessKeyId       AccessKey ID
+    //   accessKeySecret   AccessKey Secret
+    //   endpoint          可选，S3 兼容端点（阿里云/MinIO/腾讯云需填写）
+    //   forcePathStyle    可选，true 走 path-style（MinIO/部分私有云需要）
     oss: [
+        // AWS S3
         // {
-        //     name: 'my-oss',
+        //     name: 'aws-s3',
+        //     region: 'us-east-1',
+        //     bucket: 'my-bucket',
+        //     accessKeyId: 'AKIA...',
+        //     accessKeySecret: '...',
+        // },
+        // 阿里云 OSS（S3 兼容）
+        // {
+        //     name: 'ali-oss',
         //     region: 'oss-cn-hangzhou',
         //     bucket: 'my-bucket',
         //     accessKeyId: 'your-access-key-id',
         //     accessKeySecret: 'your-access-key-secret',
+        //     endpoint: 'https://oss-cn-hangzhou.aliyuncs.com',
+        // },
+        // MinIO
+        // {
+        //     name: 'minio',
+        //     region: 'us-east-1',
+        //     bucket: 'my-bucket',
+        //     accessKeyId: 'minioadmin',
+        //     accessKeySecret: 'minioadmin',
+        //     endpoint: 'http://192.168.1.10:9000',
+        //     forcePathStyle: true,
         // },
     ],
 };
