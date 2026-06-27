@@ -1,30 +1,32 @@
-import '../styles/globals.css'
-import { Divider, FloatButton, Layout, Menu } from 'antd';
+import '../styles/globals.css';
 import React from 'react';
-import Head from 'next/head'
+import Head from 'next/head';
+import { ChevronLeft, ArrowUp } from 'lucide-react';
+import { Separator } from '../components/ui/separator';
+import { Toaster } from '../components/ui/sonner';
+import { Button } from '../components/ui/button';
+import { cn } from '../lib/utils';
 import { getCurrentEnv } from '../lib/util';
-import getMenu from "./menu"
-
-const { Header, Sider } = Layout;
+import getMenu from './menu';
 
 // 根据当前路径反查所属的顶部一级菜单 key
 function getTopKeyByPath(menus, path) {
     for (let item of menus) {
-        if (item.hide) continue
+        if (item.hide) continue;
         if (item.submenu) {
-            if (item.submenu.some(sub => !sub.hide && sub.key === path)) return item.key
+            if (item.submenu.some((sub) => !sub.hide && sub.key === path)) return item.key;
         } else if (item.key === path) {
-            return item.key
+            return item.key;
         }
     }
-    return ''
+    return '';
 }
 
 class ClassApp extends React.Component {
-    component = null
-    headerRef = null
+    component = null;
+    headerRef = null;
     constructor(props) {
-        super(props); // 用于父子组件传值
+        super(props);
         this.state = {
             inited: false,
             title: <></>,
@@ -33,13 +35,14 @@ class ClassApp extends React.Component {
             selectedKeys: [],
             topSelectedKey: '',
             allMenus: [],
-        }
+            showBackTop: false,
+        };
     }
     componentDidMount = async () => {
-        let collapsed = localStorage.getItem('collapsed') > 0
-        let env = getCurrentEnv()
-        let menus = getMenu(env)
-        let path = window.location.pathname
+        let collapsed = localStorage.getItem('collapsed') > 0;
+        let env = getCurrentEnv();
+        let menus = getMenu(env);
+        let path = window.location.pathname;
         await this.setState({
             inited: true,
             selectedKeys: [path],
@@ -47,118 +50,170 @@ class ClassApp extends React.Component {
             allMenus: menus,
             collapsed: collapsed,
         });
+        window.addEventListener('scroll', this.onScroll, true);
+    };
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.onScroll, true);
     }
+    onScroll = () => {
+        let y = window.scrollY;
+        let show = y > 200;
+        if (show !== this.state.showBackTop) this.setState({ showBackTop: show });
+    };
+    scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     updateTitle = async () => {
         if (this.component != null && this.component.renderPageTitle != null && this.component.renderPageTitle != undefined) {
-            await this.setState({
-                title: this.component.renderPageTitle(),
-            })
+            await this.setState({ title: this.component.renderPageTitle() });
         }
-    }
+    };
     refUpdate = async (ref) => {
-        this.component = ref
+        this.component = ref;
         if (ref != null) {
             if (ref.htmlTitle != null && ref.htmlTitle != undefined) {
-                this.setState({
-                    headTitle: ref.htmlTitle(),
-                })
+                this.setState({ headTitle: ref.htmlTitle() });
             }
             if (ref.renderPageTitle != null && ref.renderPageTitle != undefined) {
-                await this.setState({
-                    title: ref.renderPageTitle(),
-                })
+                await this.setState({ title: ref.renderPageTitle() });
             } else if (ref.htmlTitle != null && ref.htmlTitle != undefined) {
                 await this.setState({
-                    title: <h3>
-                        <strong>{ref.htmlTitle()}</strong>
-                    </h3>
-                })
+                    title: (
+                        <h3 className="text-lg font-semibold">
+                            <strong>{ref.htmlTitle()}</strong>
+                        </h3>
+                    ),
+                });
             }
         }
-    }
-    setCollapse = async (value) => {
-        await this.setState({ collapsed: value })
-        localStorage.setItem('collapsed', value ? '1' : '0')
-    }
-    onTopMenuClick = ({ key }) => {
-        // 点击带子菜单的顶部项时仅切换左侧子导航，不跳转（这类项没有 href）
-        const item = this.state.allMenus.find(m => m.key === key)
+    };
+    setCollapse = (value) => {
+        this.setState({ collapsed: value });
+        localStorage.setItem('collapsed', value ? '1' : '0');
+    };
+    onTopMenuClick = (key) => {
+        const item = this.state.allMenus.find((m) => m.key === key);
+        // 带子菜单的顶部项仅切换左侧子导航，不跳转
         if (item && item.submenu) {
-            this.setState({ topSelectedKey: key })
+            this.setState({ topSelectedKey: key });
         }
-    }
+    };
     render() {
-        const { Component, pageProps } = this.props
+        const { Component, pageProps } = this.props;
         if (!this.state.inited) {
-            return null
+            return null;
         }
-        const { allMenus, topSelectedKey, selectedKeys, collapsed } = this.state
-        const topMenus = allMenus.filter(item => !item.hide)
-        const activeTop = topMenus.find(item => item.key === topSelectedKey)
-        const subMenus = activeTop && activeTop.submenu ? activeTop.submenu.filter(s => !s.hide) : []
-        const showSider = subMenus.length > 0
+        const { allMenus, topSelectedKey, selectedKeys, collapsed, showBackTop } = this.state;
+        const topMenus = allMenus.filter((item) => !item.hide);
+        const activeTop = topMenus.find((item) => item.key === topSelectedKey);
+        const subMenus = activeTop && activeTop.submenu ? activeTop.submenu.filter((s) => !s.hide) : [];
+        const showSider = subMenus.length > 0;
 
-        return <>
-            <Head>
-                <title>{this.state.headTitle || 'admin后台'}</title>
-                <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-                <meta name="viewport" content="width=device-width,initial-scale=0,maximum-scale=0,user-scalable=yes,shrink-to-fit=yes" />
-            </Head>
-            <Layout style={{ minHeight: '100vh' }}>
-                <Header style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ color: '#fff', fontSize: 18, fontWeight: 600, marginRight: 32, whiteSpace: 'nowrap' }}>Admin后台</div>
-                    <Menu
-                        theme="dark"
-                        mode="horizontal"
-                        selectedKeys={[topSelectedKey]}
-                        onClick={this.onTopMenuClick}
-                        style={{ flex: 1, minWidth: 0, background: 'transparent' }}
-                    >
-                        {topMenus.map(item => (
-                            <Menu.Item key={item.key}>
-                                {item.submenu ? item.title : <a href={item.href}>{item.title}</a>}
-                            </Menu.Item>
-                        ))}
-                    </Menu>
-                </Header>
-                <Layout hasSider>
-                    {showSider && (
-                        <Sider
-                            collapsible
-                            collapsed={collapsed}
-                            onCollapse={this.setCollapse}
-                            width={200}
-                            theme="light"
-                        >
-                            <Menu
-                                mode="inline"
-                                theme="light"
-                                selectedKeys={selectedKeys}
-                                style={{ height: '100%', borderRight: 0 }}
+        return (
+            <>
+                <Head>
+                    <title>{this.state.headTitle || 'admin后台'}</title>
+                    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+                    <meta name="viewport" content="width=device-width,initial-scale=0,maximum-scale=0,user-scalable=yes,shrink-to-fit=yes" />
+                </Head>
+                <div className="min-h-screen flex flex-col">
+                    {/* 顶部主导航 */}
+                    <header className="flex items-center h-14 px-4 bg-zinc-900 text-zinc-50 sticky top-0 z-40">
+                        <div className="text-lg font-semibold mr-8 whitespace-nowrap">Admin后台</div>
+                        <nav className="flex items-center gap-1 overflow-x-auto">
+                            {topMenus.map((item) => {
+                                const active = item.key === topSelectedKey;
+                                return (
+                                    <button
+                                        key={item.key}
+                                        onClick={() => this.onTopMenuClick(item.key)}
+                                        className={cn(
+                                            'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                                            active
+                                                ? 'bg-zinc-700 text-white'
+                                                : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
+                                        )}
+                                    >
+                                        {item.submenu ? (
+                                            item.title
+                                        ) : (
+                                            <a href={item.href} className="block">
+                                                {item.title}
+                                            </a>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </nav>
+                    </header>
+
+                    <div className="flex flex-1">
+                        {/* 左侧子导航 */}
+                        {showSider && (
+                            <aside
+                                className={cn(
+                                    'relative shrink-0 border-r bg-card transition-[width] duration-200',
+                                    collapsed ? 'w-14' : 'w-52'
+                                )}
                             >
-                                {subMenus.map(item => (
-                                    <Menu.Item key={item.key}>
-                                        <a href={item.href}>{item.title}</a>
-                                    </Menu.Item>
-                                ))}
-                            </Menu>
-                        </Sider>
-                    )}
-                    <Layout className="site-layout" style={{ padding: '20px 20px 50px' }}>
-                        <div ref={r => this.headerRef = r}>
-                            {this.state.title}
-                        </div>
-                        <Divider style={{ margin: '0 0 20px' }}></Divider>
-                        <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
-                        <div id="json-id"></div>
-                        <FloatButton.BackTop />
-                    </Layout>
-                </Layout>
-            </Layout>
+                                <nav className="py-3">
+                                    {subMenus.map((item) => {
+                                        const active = selectedKeys.includes(item.key);
+                                        return (
+                                            <a
+                                                key={item.key}
+                                                href={item.href}
+                                                title={item.title}
+                                                className={cn(
+                                                    'flex items-center h-10 mx-2 px-3 rounded-md text-sm transition-colors',
+                                                    collapsed && 'justify-center px-0',
+                                                    active
+                                                        ? 'bg-accent text-accent-foreground font-medium'
+                                                        : 'text-foreground hover:bg-accent hover:text-accent-foreground'
+                                                )}
+                                            >
+                                                <span className={cn('truncate', collapsed && 'sr-only')}>
+                                                    {item.title}
+                                                </span>
+                                            </a>
+                                        );
+                                    })}
+                                </nav>
+                                <button
+                                    onClick={() => this.setCollapse(!collapsed)}
+                                    className="absolute bottom-3 left-1/2 -translate-x-1/2 p-1.5 rounded-md border bg-background hover:bg-accent"
+                                    title={collapsed ? '展开' : '收起'}
+                                >
+                                    <ChevronLeft
+                                        className={cn('h-4 w-4 transition-transform', collapsed && 'rotate-180')}
+                                    />
+                                </button>
+                            </aside>
+                        )}
 
-        </>
+                        {/* 内容区 */}
+                        <main className="flex-1 min-w-0 p-5 pb-12">
+                            <div ref={(r) => (this.headerRef = r)}>{this.state.title}</div>
+                            <Separator className="my-4" />
+                            <Component {...pageProps} ref={this.refUpdate} updateTitle={this.updateTitle} />
+                            <div id="json-id"></div>
+                        </main>
+                    </div>
+                </div>
+
+                {showBackTop && (
+                    <Button
+                        size="icon"
+                        className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg"
+                        onClick={this.scrollToTop}
+                    >
+                        <ArrowUp className="h-5 w-5" />
+                    </Button>
+                )}
+                <Toaster position="top-center" />
+            </>
+        );
     }
 }
 
-
-export default ClassApp
+export default ClassApp;

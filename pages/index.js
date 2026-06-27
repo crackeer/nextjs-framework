@@ -1,28 +1,26 @@
 import React from 'react';
-import { Card, Row, Col } from 'antd';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 
 class Home extends React.Component {
-    form = null
+    form = null;
     constructor(props) {
         super(props); // 用于父子组件传值
-        this.state = {
-        }
+        this.state = {};
     }
     htmlTitle = () => {
-        return "首页"
-    }
+        return '首页';
+    };
     render() {
         return (
-            <>
-                <Row>
-                    <Col span={24}>
-                        <Card title="用户信息" style={{ marginBottom: '20px', fontSize: '18px' }}>
-
-                        </Card>
-                    </Col>
-                </Row>
-            </>
-        )
+            <div className="grid grid-cols-1 gap-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base">用户信息</CardTitle>
+                    </CardHeader>
+                    <CardContent />
+                </Card>
+            </div>
+        );
     }
 }
 
