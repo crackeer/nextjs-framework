@@ -1,9 +1,7 @@
 /**
  * 全局 APP 配置
  * ------------------------------------------------------------------
- * 该文件在运行时被读取（lib/config.js），修改后无需重新构建：
- *   - 开发模式：直接生效（每次请求重新读取）
- *   - standalone 生产模式：需重启服务（postbuild 已把本文件复制进 standalone）
+ * 该文件在运行时被读取（lib/config.js），修改后需重启服务生效。
  *
  * 字段说明：
  *   port     服务监听端口
@@ -13,6 +11,13 @@
  *   apiProxy API 代理目标配置
  *             key   = EndHost Name（用于 /proxy/{EndHost Name}/path*）
  *             value = 目标站点 baseURL
+ *   ssh      SSH 服务器列表，用于 Web 终端连接
+ *             name      显示名称（唯一，用于下拉选择）
+ *             host      SSH 主机地址
+ *             port      SSH 端口（默认 22）
+ *             username  登录用户名
+ *             password  密码（与 privateKey 二选一）
+ *             privateKey 私钥内容（PEM 格式字符串）
  * ------------------------------------------------------------------
  */
 module.exports = {
@@ -32,4 +37,22 @@ module.exports = {
         github: 'https://api.github.com',
         jsonplaceholder: 'https://jsonplaceholder.typicode.com',
     },
+
+    // SSH 服务器列表：在顶部导航 Ssh 下拉中选择连接
+    ssh: [
+        // {
+        //     name: 'web-server',
+        //     host: '192.168.1.100',
+        //     port: 22,
+        //     username: 'root',
+        //     password: 'your-password',
+        // },
+        // {
+        //     name: 'db-server',
+        //     host: '192.168.1.200',
+        //     port: 22,
+        //     username: 'ubuntu',
+        //     privateKey: '-----BEGIN OPENSSH PRIVATE KEY-----\n...\n-----END OPENSSH PRIVATE KEY-----',
+        // },
+    ],
 };

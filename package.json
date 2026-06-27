@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "node scripts/dev.js",
     "build": "next build",
-    "postbuild": "node scripts/postbuild.js",
     "start": "node scripts/start.js"
   },
   "dependencies": {
@@ -19,6 +18,8 @@
     "@radix-ui/react-separator": "^1.1.10",
     "@radix-ui/react-slot": "^1.3.0",
     "@radix-ui/react-tabs": "^1.1.15",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
     "axios": "^1.18.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -32,8 +33,10 @@
     "react-dom": "19.2.7",
     "sharp": "^0.35.2",
     "sonner": "^2.0.7",
+    "ssh2": "^1.17.0",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
