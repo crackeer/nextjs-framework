@@ -68,4 +68,16 @@ module.exports = {
         //     secure: false,
         // },
     ],
+
+    // 阿里云 OSS 配置列表：在顶部导航 Oss 下拉中选择连接
+    // region 形如 'oss-cn-hangzhou'；bucket 为存储空间名
+    oss: [
+        // {
+        //     name: 'my-oss',
+        //     region: 'oss-cn-hangzhou',
+        //     bucket: 'my-bucket',
+        //     accessKeyId: 'your-access-key-id',
+        //     accessKeySecret: 'your-access-key-secret',
+        // },
+    ],
 };
