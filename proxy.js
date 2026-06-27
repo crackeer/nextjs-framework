@@ -21,7 +21,11 @@ export async function proxy(req) {
     const token = req.cookies.get('auth_token')?.value;
     const payload = await verifyToken(token, secret);
     if (!payload) {
-        const loginUrl = new URL('/login', req.url);
+        // 构造登录跳转 URL：优先使用反代头（X-Forwarded-Proto/Host），
+        // 避免 HTTPS 预览场景下生成 http://localhost:... 触发 ERR_CLEARTEXT_NOT_PERMITTED
+        const proto = req.headers.get('x-forwarded-proto') || req.nextUrl.protocol.replace(':', '');
+        const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || req.nextUrl.host;
+        const loginUrl = new URL('/login', `${proto}://${host}`);
         return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
