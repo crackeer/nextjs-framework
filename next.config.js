@@ -9,6 +9,16 @@ const nextConfig = {
     output: 'standalone',
     // 允许开发模式下从这些来源访问（预览/本地 IP），避免 HMR 跨域被拦截
     allowedDevOrigins: ['127.0.0.1', 'localhost', '*.trae.cn'],
+    // API 代理：对外暴露 /proxy/{endHostName}/path*，
+    // 内部转交 pages/api/proxy/[endHostName]/[...path].js 处理
+    async rewrites() {
+        return [
+            {
+                source: '/proxy/:endHostName/:path*',
+                destination: '/api/proxy/:endHostName/:path*',
+            },
+        ];
+    },
 };
 
 const withMDX = createMDX({});

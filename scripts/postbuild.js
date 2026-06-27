@@ -23,4 +23,7 @@ copy(
     path.join(standaloneDir, '.next', 'static')
 );
 
-console.log('[postbuild] copied public/ and .next/static into .next/standalone');
+// 全局 APP 配置：运行时由 lib/config.js 读取，需一并复制进 standalone
+copy(path.join(root, 'config'), path.join(standaloneDir, 'config'));
+
+console.log('[postbuild] copied public/, .next/static, config/ into .next/standalone');

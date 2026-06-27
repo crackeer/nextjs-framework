@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/dev.js",
     "build": "next build",
     "postbuild": "node scripts/postbuild.js",
-    "start": "node .next/standalone/server.js"
+    "start": "node scripts/start.js"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",

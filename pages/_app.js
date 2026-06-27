@@ -1,7 +1,7 @@
 import '../styles/globals.css';
 import React from 'react';
 import Head from 'next/head';
-import { ChevronLeft, ArrowUp, Menu, X } from 'lucide-react';
+import { ChevronLeft, ArrowUp, Menu, X, LogOut, User } from 'lucide-react';
 import { Separator } from '../components/ui/separator';
 import { Toaster } from '../components/ui/sonner';
 import { Button } from '../components/ui/button';
@@ -38,6 +38,7 @@ class ClassApp extends React.Component {
             showBackTop: false,
             mobileDrawerOpen: false,
             isMobile: false,
+            currentUser: null,
         };
     }
     componentDidMount = async () => {
@@ -55,6 +56,31 @@ class ClassApp extends React.Component {
         });
         window.addEventListener('scroll', this.onScroll, true);
         window.addEventListener('resize', this.onResize);
+        // 登录页无需获取当前用户
+        if (path !== '/login') {
+            this.fetchCurrentUser();
+        }
+    };
+    fetchCurrentUser = async () => {
+        try {
+            const resp = await fetch('/api/auth/me');
+            if (resp.ok) {
+                const data = await resp.json();
+                this.setState({ currentUser: data.user || null });
+            } else {
+                this.setState({ currentUser: null });
+            }
+        } catch {
+            this.setState({ currentUser: null });
+        }
+    };
+    onLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch {
+            /* ignore */
+        }
+        window.location.href = '/login';
     };
     componentWillUnmount() {
         window.removeEventListener('scroll', this.onScroll, true);
@@ -117,11 +143,27 @@ class ClassApp extends React.Component {
         if (!this.state.inited) {
             return null;
         }
-        const { allMenus, topSelectedKey, selectedKeys, collapsed, showBackTop, isMobile, mobileDrawerOpen } = this.state;
+        const { allMenus, topSelectedKey, selectedKeys, collapsed, showBackTop, isMobile, mobileDrawerOpen, currentUser } = this.state;
         const topMenus = allMenus.filter((item) => !item.hide);
         const activeTop = topMenus.find((item) => item.key === topSelectedKey);
         const subMenus = activeTop && activeTop.submenu ? activeTop.submenu.filter((s) => !s.hide) : [];
         const showSider = subMenus.length > 0;
+        const currentPath = selectedKeys[0] || '';
+        const isLoginPage = currentPath === '/login';
+
+        // 登录页不渲染后台框架，只渲染登录内容
+        if (isLoginPage) {
+            return (
+                <>
+                    <Head>
+                        <title>登录 - admin后台</title>
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+                    </Head>
+                    <Component {...pageProps} />
+                    <Toaster position="top-center" />
+                </>
+            );
+        }
 
         // 子导航内容（PC 与移动端共用）
         const renderSubNav = (onItemClick) => (
@@ -197,6 +239,23 @@ class ClassApp extends React.Component {
                                 );
                             })}
                         </nav>
+                        {/* 当前用户与登出 */}
+                        {currentUser && (
+                            <div className="flex items-center gap-2 ml-2 sm:ml-4 shrink-0">
+                                <span className="hidden sm:flex items-center gap-1.5 text-sm text-zinc-300">
+                                    <User className="h-4 w-4" />
+                                    {currentUser.username}
+                                </span>
+                                <button
+                                    onClick={this.onLogout}
+                                    className="flex items-center gap-1 px-2 py-1 rounded-md text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
+                                    title="登出"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                    <span className="hidden sm:inline">登出</span>
+                                </button>
+                            </div>
+                        )}
                     </header>
 
                     <div className="flex flex-1">
