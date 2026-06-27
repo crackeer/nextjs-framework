@@ -1,34 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# next-demo
 
-## Getting Started
+基于 [Next.js](https://nextjs.org/)（Pages Router）+ React + Ant Design 的后台 / 工具箱应用。
 
-First, run the development server:
+## 开发
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+浏览器打开 [http://localhost:3000](http://localhost:3000)。页面入口在 `pages/` 目录下，编辑后自动热更新。
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## 部署（Node 服务）
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+采用 Next.js 标准的 Node 部署方式：先构建生产产物，再用 `next start` 启动 Node 服务。
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+默认监听 `0.0.0.0:9393`（见 `package.json` 中 `start` 脚本，可按需修改端口）。
 
-To learn more about Next.js, take a look at the following resources:
+生产环境通常配合进程管理器（如 PM2）使用：
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+pm2 start npm --name next-demo -- start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+如需在容器中部署，典型 Dockerfile 片段：
 
-## Deploy on Vercel
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+RUN npm run build
+EXPOSE 9393
+CMD ["npm", "start"]
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 目录结构
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
+api/         # 前端请求封装
+component/   # 通用组件（JSONEditor / JSONView / Table / WsClient …）
+lib/         # 工具库（router / util / json）
+pages/       # Next.js 页面
+public/      # 静态资源
+styles/      # 全局样式
+```
+
+## 了解更多
+
+- [Next.js 文档](https://nextjs.org/docs) — 了解 Next.js 的特性与 API。
