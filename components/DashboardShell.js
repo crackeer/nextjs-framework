@@ -5,6 +5,7 @@ import { ChevronDown, ArrowUp, LogOut, User } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
 import SshNavDropdown from './SshNavDropdown';
+import FtpNavDropdown from './FtpNavDropdown';
 import { cn } from '../lib/utils';
 import { getCurrentEnv } from '../lib/util';
 import getMenu from '../lib/menu';
@@ -183,6 +184,8 @@ export default function DashboardShell({ children }) {
                     </nav>
                     {/* SSH 终端下拉 */}
                     <SshNavDropdown />
+                    {/* FTP 文件管理下拉 */}
+                    <FtpNavDropdown />
                     {/* 当前用户与登出 */}
                     {currentUser && (
                         <div className="flex items-center gap-2 ml-2 sm:ml-4 shrink-0">

@@ -55,4 +55,17 @@ module.exports = {
         //     privateKey: '-----BEGIN OPENSSH PRIVATE KEY-----\n...\n-----END OPENSSH PRIVATE KEY-----',
         // },
     ],
+
+    // FTP 服务器列表：在顶部导航 Ftp 下拉中选择连接
+    // secure: true 走 FTPS（显式 TLS），false 走普通 FTP
+    ftp: [
+        // {
+        //     name: 'ftp-server',
+        //     host: '192.168.1.50',
+        //     port: 21,
+        //     user: 'anonymous',
+        //     password: 'anon@',
+        //     secure: false,
+        // },
+    ],
 };
