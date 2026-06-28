@@ -1,10 +1,10 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '../../../../components/ui/button';
 import { Textarea } from '../../../../components/ui/textarea';
 import { Base64 } from 'js-base64';
 import dayjs from 'dayjs';
-import PageHeader from '../../../../components/PageHeader';
+import { usePageTitle } from '../../../../components/DashboardShell';
 
 class Convert extends React.Component {
     constructor(props) {
@@ -73,9 +73,16 @@ class Convert extends React.Component {
 }
 
 export default function Page() {
+    const { setTitle } = usePageTitle();
+    useEffect(() => {
+        setTitle('转码');
+        document.title = '转码';
+        return () => setTitle(null);
+    }, [setTitle]);
+
     return (
-        <PageHeader title="转码">
+        <>
             <Convert />
-        </PageHeader>
+        </>
     );
 }

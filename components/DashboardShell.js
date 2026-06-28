@@ -116,9 +116,8 @@ export default function DashboardShell({ children }) {
         <PageTitleContext.Provider value={{ setTitle }}>
             <div className="min-h-screen flex flex-col">
                 {/* 顶部主导航 */}
-                <header className="flex items-center h-14 px-3 sm:px-4 bg-zinc-900 text-zinc-50 sticky top-0 z-40">
-                    <div className="text-lg font-semibold mr-4 sm:mr-8 whitespace-nowrap">Admin后台</div>
-                    <nav ref={navRef} className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0">
+                <header className="flex items-center h-12 px-3 sm:px-4 bg-white text-gray-900 sticky top-0 z-40 border-b">
+                    <nav ref={navRef} className="flex items-center gap-1 flex-1 min-w-0 overflow-visible">
                         {topMenus.map((item) => {
                             const active = item.key === topSelectedKey;
                             // 无子菜单：直接跳转
@@ -130,8 +129,8 @@ export default function DashboardShell({ children }) {
                                         className={cn(
                                             'px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap shrink-0',
                                             active
-                                                ? 'bg-zinc-700 text-white'
-                                                : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
+                                                ? 'bg-[#3eb489] text-white'
+                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                         )}
                                     >
                                         {item.title}
@@ -148,8 +147,8 @@ export default function DashboardShell({ children }) {
                                         className={cn(
                                             'flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap',
                                             active || open
-                                                ? 'bg-zinc-700 text-white'
-                                                : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
+                                                ? 'bg-[#3eb489] text-white'
+                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                         )}
                                     >
                                         {item.title}
@@ -158,7 +157,7 @@ export default function DashboardShell({ children }) {
                                         />
                                     </button>
                                     {open && (
-                                        <div className="absolute left-0 top-full mt-1 z-50 min-w-[180px] bg-zinc-800 border border-zinc-700 rounded-md shadow-xl py-1">
+                                        <div className="absolute left-0 top-full mt-1 z-50 min-w-[180px] bg-white border border-gray-200 rounded-md shadow-lg py-1">
                                             {subItems.map((sub) => {
                                                 const subActive = sub.key === pathname;
                                                 return (
@@ -169,8 +168,8 @@ export default function DashboardShell({ children }) {
                                                         className={cn(
                                                             'block px-3 py-2 text-sm transition-colors',
                                                             subActive
-                                                                ? 'bg-zinc-700 text-white'
-                                                                : 'text-zinc-200 hover:bg-zinc-700'
+                                                                ? 'bg-[#3eb489] text-white'
+                                                                : 'text-gray-700 hover:bg-gray-100'
                                                         )}
                                                     >
                                                         {sub.title}
@@ -182,23 +181,23 @@ export default function DashboardShell({ children }) {
                                 </div>
                             );
                         })}
+                        {/* SSH 终端下拉 */}
+                        <SshNavDropdown />
+                        {/* FTP 文件管理下拉 */}
+                        <FtpNavDropdown />
+                        {/* OSS 文件管理下拉 */}
+                        <OssNavDropdown />
                     </nav>
-                    {/* SSH 终端下拉 */}
-                    <SshNavDropdown />
-                    {/* FTP 文件管理下拉 */}
-                    <FtpNavDropdown />
-                    {/* OSS 文件管理下拉 */}
-                    <OssNavDropdown />
                     {/* 当前用户与登出 */}
                     {currentUser && (
                         <div className="flex items-center gap-2 ml-2 sm:ml-4 shrink-0">
-                            <span className="hidden sm:flex items-center gap-1.5 text-sm text-zinc-300">
+                            <span className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600">
                                 <User className="h-4 w-4" />
                                 {currentUser.username}
                             </span>
                             <button
                                 onClick={onLogout}
-                                className="flex items-center gap-1 px-2 py-1 rounded-md text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
+                                className="flex items-center gap-1 px-2 py-1 rounded-md text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                                 title="登出"
                             >
                                 <LogOut className="h-4 w-4" />
@@ -209,9 +208,9 @@ export default function DashboardShell({ children }) {
                 </header>
 
                 {/* 内容区：占满宽度 */}
-                <main className="flex-1 min-w-0 p-3 sm:p-5 pb-12">
+                <main className="flex-1 min-w-0 px-3 pt-1.5 pb-3 sm:px-5 sm:pt-2.5 sm:pb-5 pb-12">
                     <div>{title}</div>
-                    <Separator className="my-4" />
+                    <Separator className="my-2" />
                     {children}
                     <div id="json-id"></div>
                 </main>

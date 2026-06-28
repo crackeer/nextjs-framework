@@ -5,7 +5,7 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { X, Plus, Terminal as TerminalIcon } from 'lucide-react';
-import PageHeader from '../../../components/PageHeader';
+import { usePageTitle } from '../../../components/DashboardShell';
 
 // 全局自增 tab 计数器，保证 tab id 唯一
 let tabIdSeq = 0;
@@ -71,10 +71,36 @@ function SshPageInner() {
         },
         [activeId]
     );
+    const { setTitle } = usePageTitle();
+
+    // 面包屑标题（同步到顶栏）+ 浏览器标签
+    const activeTab = tabs.find((t) => t.id === activeId);
+    useEffect(() => {
+        const breadcrumb = (
+            <div className="flex items-center gap-1.5 text-sm">
+                <span className="text-muted-foreground">SSH 终端</span>
+                {activeTab && (
+                    <>
+                        <span className="text-muted-foreground">/</span>
+                        <span className="font-medium">{activeTab.title}</span>
+                    </>
+                )}
+            </div>
+        );
+        setTitle(breadcrumb);
+        return () => {
+            setTitle(null);
+        };
+    }, [activeTab, setTitle]);
+
+    // 浏览器标签标题
+    useEffect(() => {
+        document.title = activeTab ? `SSH - ${activeTab.title}` : 'SSH 终端';
+    }, [activeTab]);
 
     return (
-        <PageHeader title="SSH 终端">
-            <div className="flex flex-col h-[calc(100vh-190px)] border rounded-md overflow-hidden bg-black">
+        <>
+            <div className="flex flex-col h-[calc(100vh-115px)] border rounded-md overflow-hidden bg-black">
                 {/* 标签栏 */}
                 <div className="flex items-center bg-zinc-900 border-b border-zinc-700 overflow-x-auto shrink-0">
                     {tabs.map((tab) => (
@@ -152,7 +178,7 @@ function SshPageInner() {
                     )}
                 </div>
             </div>
-        </PageHeader>
+        </>
     );
 }
 
@@ -172,15 +198,36 @@ function SshTerminal({ host, active }) {
             fontFamily: 'Menlo, Monaco, "Courier New", monospace',
             cursorBlink: true,
             scrollback: 5000,
-            theme: {
-                background: '#000000',
-                foreground: '#e4e4e4',
-                cursor: '#e4e4e4',
-            },
         });
         const fitAddon = new FitAddon();
         term.loadAddon(fitAddon);
         term.open(container);
+
+        // xterm 6.x 在 open() 后设置 theme 才能完整生效
+        const nordTheme = {
+            background: '#2e3440',
+            foreground: '#d8dee9',
+            cursor: '#d8dee9',
+            cursorAccent: '#2e3440',
+            selectionBackground: '#434c5e',
+            black:   '#3b4252',
+            red:     '#bf616a',
+            green:   '#a3be8c',
+            yellow:  '#ebcb8b',
+            blue:    '#81a1c1',
+            magenta: '#b48ead',
+            cyan:    '#88c0d0',
+            white:   '#e5e9f0',
+            brightBlack:   '#4c566a',
+            brightRed:     '#bf616a',
+            brightGreen:   '#a3be8c',
+            brightYellow:  '#ebcb8b',
+            brightBlue:    '#81a1c1',
+            brightMagenta: '#b48ead',
+            brightCyan:    '#8fbcbb',
+            brightWhite:   '#eceff4',
+        };
+        term.options.theme = nordTheme;
         termRef.current = term;
         fitRef.current = fitAddon;
 

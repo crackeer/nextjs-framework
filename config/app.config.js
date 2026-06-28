@@ -42,6 +42,20 @@ module.exports = {
 
     // SSH 服务器列表：在顶部导航 Ssh 下拉中选择连接
     ssh: [
+        {
+            name: 'ssh-server1',
+            host: '10.33.207.152',
+            port: 9002,
+            username: 'root',
+            password: '123323234567',
+        },
+         {
+            name: 'ssh-server2',
+            host: '10.33.207.152',
+            port: 9002,
+            username: 'root',
+            password: '122223232334567',
+        }
         // {
         //     name: 'web-server',
         //     host: '192.168.1.100',

@@ -14,7 +14,7 @@ import {
     Home,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import PageHeader from '../../../components/PageHeader';
+import { usePageTitle } from '../../../components/DashboardShell';
 
 export default function FtpPage() {
     return (
@@ -39,6 +39,27 @@ function FtpPageInner() {
             setPath('/');
         }
     }, [host]);
+
+    // 同步页面标题（header 面包屑 + 浏览器标签）
+    const { setTitle } = usePageTitle();
+    useEffect(() => {
+        if (!host) {
+            setTitle('FTP 文件管理');
+            document.title = 'FTP 文件管理';
+        } else {
+            const display = path === '/' ? host : `${host}${path}`;
+            const breadcrumb = (
+                <div className="flex items-center gap-1.5 text-sm">
+                    <span className="text-muted-foreground">FTP</span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="font-medium">{display}</span>
+                </div>
+            );
+            setTitle(breadcrumb);
+            document.title = `FTP - ${display}`;
+        }
+        return () => setTitle(null);
+    }, [host, path, setTitle]);
 
     const fetchList = useCallback(async () => {
         if (!host) return;
@@ -197,16 +218,16 @@ function FtpPageInner() {
 
     if (!host) {
         return (
-            <PageHeader title="FTP 文件管理">
+            <>
                 <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
                     请从顶部导航 Ftp 下拉选择一个 FTP 连接
                 </div>
-            </PageHeader>
+            </>
         );
     }
 
     return (
-        <PageHeader title={`FTP - ${host}`}>
+        <>
             <div className="space-y-3">
                 {/* 工具栏 */}
                 <div className="flex flex-wrap items-center gap-2">
@@ -301,11 +322,16 @@ function FtpPageInner() {
                                 items.map((item, idx) => (
                                     <tr
                                         key={idx}
-                                        onClick={() => setSelected(item)}
+                                        onClick={() => {
+                                            if (item.isDirectory) {
+                                                enterDir(item);
+                                            } else {
+                                                setSelected(item);
+                                            }
+                                        }}
                                         className={`border-t cursor-pointer ${
                                             selected?.name === item.name ? 'bg-accent' : 'hover:bg-accent/50'
                                         }`}
-                                        onDoubleClick={() => item.isDirectory && enterDir(item)}
                                     >
                                         <td className="px-3 py-2">
                                             <div className="flex items-center gap-2">
@@ -314,15 +340,7 @@ function FtpPageInner() {
                                                 ) : (
                                                     <FileIcon className="h-4 w-4 text-muted-foreground shrink-0" />
                                                 )}
-                                                <span
-                                                    className="truncate"
-                                                    onDoubleClick={(e) => {
-                                                        e.stopPropagation();
-                                                        if (item.isDirectory) enterDir(item);
-                                                    }}
-                                                >
-                                                    {item.name}
-                                                </span>
+                                                <span className="truncate">{item.name}</span>
                                             </div>
                                         </td>
                                         <td className="px-3 py-2 text-right text-muted-foreground">
@@ -374,10 +392,10 @@ function FtpPageInner() {
                     </table>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                    提示：双击目录进入，单击行选中
+                    提示：单击目录进入，单击文件选中
                 </div>
             </div>
-        </PageHeader>
+        </>
     );
 }
 

@@ -39,20 +39,20 @@ export default function OssNavDropdown() {
         <div ref={ref} className="relative shrink-0">
             <button
                 onClick={() => setOpen((v) => !v)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
             >
                 <Cloud className="h-4 w-4" />
                 <span>Oss</span>
                 <ChevronDown className="h-3 w-3" />
             </button>
             {open && (
-                <div className="absolute right-0 top-full mt-1 z-50 min-w-[220px] bg-zinc-800 border border-zinc-700 rounded-md shadow-xl py-1">
+                <div className="absolute right-0 top-full mt-1 z-50 min-w-[220px] bg-white border border-gray-200 rounded-md shadow-lg py-1">
                     {loading ? (
-                        <div className="px-3 py-2 text-sm text-zinc-500">加载中…</div>
+                        <div className="px-3 py-2 text-sm text-gray-400">加载中…</div>
                     ) : hosts.length === 0 ? (
-                        <div className="px-3 py-2 text-sm text-zinc-500">
+                        <div className="px-3 py-2 text-sm text-gray-400">
                             未配置 OSS 主机
-                            <div className="text-xs mt-1 text-zinc-600">
+                            <div className="text-xs mt-1 text-gray-500">
                                 请在 config/app.config.js 的 oss 字段添加
                             </div>
                         </div>
@@ -61,10 +61,10 @@ export default function OssNavDropdown() {
                             <button
                                 key={h.name}
                                 onClick={() => onHostClick(h.name)}
-                                className="w-full text-left px-3 py-2 hover:bg-zinc-700 transition-colors"
+                                className="w-full text-left px-3 py-2 hover:bg-gray-100 transition-colors"
                             >
-                                <div className="text-sm text-zinc-100">{h.name}</div>
-                                <div className="text-xs text-zinc-500">
+                                <div className="text-sm text-gray-800">{h.name}</div>
+                                <div className="text-xs text-gray-400">
                                     {h.bucket} @ {h.region}
                                 </div>
                             </button>

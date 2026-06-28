@@ -13,7 +13,7 @@ import {
     Home,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import PageHeader from '../../../components/PageHeader';
+import { usePageTitle } from '../../../components/DashboardShell';
 
 export default function OssPage() {
     return (
@@ -60,6 +60,37 @@ function OssPageInner() {
     useEffect(() => {
         setPath('/');
     }, [host, bucket]);
+
+    // 同步页面标题（header 面包屑 + 浏览器标签）
+    const { setTitle } = usePageTitle();
+    useEffect(() => {
+        if (!host) {
+            setTitle('OSS 文件管理');
+            document.title = 'OSS 文件管理';
+        } else if (!bucket) {
+            const breadcrumb = (
+                <div className="flex items-center gap-1.5 text-sm">
+                    <span className="text-muted-foreground">OSS</span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="font-medium">{host}</span>
+                </div>
+            );
+            setTitle(breadcrumb);
+            document.title = `OSS - ${host}`;
+        } else {
+            const display = path === '/' ? `${host}/${bucket}` : `${host}/${bucket}${path}`;
+            const breadcrumb = (
+                <div className="flex items-center gap-1.5 text-sm">
+                    <span className="text-muted-foreground">OSS</span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="font-medium">{display}</span>
+                </div>
+            );
+            setTitle(breadcrumb);
+            document.title = `OSS - ${display}`;
+        }
+        return () => setTitle(null);
+    }, [host, bucket, path, setTitle]);
 
     const fetchList = useCallback(async () => {
         if (!host || !bucket) return;
@@ -193,16 +224,16 @@ function OssPageInner() {
 
     if (!host) {
         return (
-            <PageHeader title="OSS 文件管理">
+            <>
                 <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
                     请从顶部导航 Oss 下拉选择一个 OSS 连接
                 </div>
-            </PageHeader>
+            </>
         );
     }
 
     return (
-        <PageHeader title={`OSS - ${host}`}>
+        <>
             <div className="space-y-3">
                 {/* 工具栏 */}
                 <div className="flex flex-wrap items-center gap-2">
@@ -314,11 +345,16 @@ function OssPageInner() {
                                 items.map((item, idx) => (
                                     <tr
                                         key={idx}
-                                        onClick={() => setSelected(item)}
+                                        onClick={() => {
+                                            if (item.isDirectory) {
+                                                enterDir(item);
+                                            } else {
+                                                setSelected(item);
+                                            }
+                                        }}
                                         className={`border-t cursor-pointer ${
                                             selected?.name === item.name ? 'bg-accent' : 'hover:bg-accent/50'
                                         }`}
-                                        onDoubleClick={() => item.isDirectory && enterDir(item)}
                                     >
                                         <td className="px-3 py-2">
                                             <div className="flex items-center gap-2">
@@ -379,10 +415,10 @@ function OssPageInner() {
                     </table>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                    提示：双击目录进入，单击行选中；切换 Bucket 会回到根目录
+                    提示：单击目录进入，单击文件选中；切换 Bucket 会回到根目录
                 </div>
             </div>
-        </PageHeader>
+        </>
     );
 }
 

@@ -1,0 +1,34 @@
+/* jsoneditor mint green theme — white bg + mint accents */
+
+/* ---- top menu bar ---- */
+.jsoneditor-menu {
+  background-color: #3eb489 !important;        /* mint green */
+  border-bottom: 1px solid #34a878 !important;  /* darker mint */
+}
+
+/* ---- main editor border ---- */
+.jsoneditor {
+  border-color: #d1d5db !important;             /* gray-300 */
+}
+
+/* ---- modal: title bar ---- */
+.jsoneditor-modal .pico-modal-header {
+  background: #3eb489 !important;               /* mint green */
+}
+
+/* ---- modal: link color ---- */
+.jsoneditor-modal a {
+  color: #3eb489 !important;                    /* mint green */
+}
+
+/* ---- modal: selected tag ---- */
+.jsoneditor-modal .selectr-selected .selectr-tag {
+  background-color: #3eb489 !important;         /* mint green */
+}
+
+/* ---- modal: active button group ---- */
+.jsoneditor-modal .jsoneditor-button-group.jsoneditor-button-group-value-asc input.jsoneditor-button-asc,
+.jsoneditor-modal .jsoneditor-button-group.jsoneditor-button-group-value-desc input.jsoneditor-button-desc {
+  background: #3eb489 !important;               /* mint green */
+  border-color: #3eb489 !important;
+}

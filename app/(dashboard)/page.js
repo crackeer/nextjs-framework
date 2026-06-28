@@ -1,7 +1,7 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
-import PageHeader from '../../components/PageHeader';
+import { usePageTitle } from '../../components/DashboardShell';
 
 class Home extends React.Component {
     constructor(props) {
@@ -23,9 +23,16 @@ class Home extends React.Component {
 }
 
 export default function Page() {
+    const { setTitle } = usePageTitle();
+    useEffect(() => {
+        setTitle('首页');
+        document.title = '首页';
+        return () => setTitle(null);
+    }, [setTitle]);
+
     return (
-        <PageHeader title="首页">
+        <>
             <Home />
-        </PageHeader>
+        </>
     );
 }
