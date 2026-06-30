@@ -65,7 +65,9 @@ export default function OssNavDropdown() {
                             >
                                 <div className="text-sm text-gray-800">{h.name}</div>
                                 <div className="text-xs text-gray-400">
-                                    {h.bucket} @ {h.region}
+                                    {(h.buckets && h.buckets.length > 0)
+                                        ? `${h.buckets.join(', ')} @ ${h.region}`
+                                        : `${h.region}`}
                                 </div>
                             </button>
                         ))
