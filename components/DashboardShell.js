@@ -1,12 +1,15 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { ChevronDown, ArrowUp, LogOut, User } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
 import SshNavDropdown from './SshNavDropdown';
 import FtpNavDropdown from './FtpNavDropdown';
 import OssNavDropdown from './OssNavDropdown';
+import K3sNavDropdown from './K3sNavDropdown';
+import MySqlNavDropdown from './MySqlNavDropdown';
 import { cn } from '../lib/utils';
 import { getCurrentEnv } from '../lib/util';
 import getMenu from '../lib/menu';
@@ -25,7 +28,9 @@ function getTopKeyByPath(menus, path) {
 }
 
 // 页面标题上下文：子页面可通过 usePageTitle 设置内容区标题
-const PageTitleContext = createContext(null);
+// setTitle - 设置标题内容
+// hideTitle - 是否隐藏标题区域（包含标题和分隔线）
+const PageTitleContext = createContext({ setTitle: () => {}, hideTitle: false, setHideTitle: () => {} });
 
 export function usePageTitle() {
     return useContext(PageTitleContext);
@@ -35,6 +40,7 @@ export default function DashboardShell({ children }) {
     const pathname = usePathname();
     const [inited, setInited] = useState(false);
     const [title, setTitle] = useState(null);
+    const [hideTitle, setHideTitle] = useState(false);
     const [topSelectedKey, setTopSelectedKey] = useState('');
     const [allMenus, setAllMenus] = useState([]);
     const [showBackTop, setShowBackTop] = useState(false);
@@ -113,7 +119,7 @@ export default function DashboardShell({ children }) {
     const topMenus = allMenus.filter((item) => !item.hide);
 
     return (
-        <PageTitleContext.Provider value={{ setTitle }}>
+        <PageTitleContext.Provider value={{ setTitle, hideTitle, setHideTitle }}>
             <div className="min-h-screen flex flex-col">
                 {/* 顶部主导航 */}
                 <header className="flex items-center h-12 px-3 sm:px-4 bg-white text-gray-900 sticky top-0 z-40 border-b">
@@ -123,7 +129,7 @@ export default function DashboardShell({ children }) {
                             // 无子菜单：直接跳转
                             if (!item.submenu) {
                                 return (
-                                    <a
+                                    <Link
                                         key={item.key}
                                         href={item.href}
                                         className={cn(
@@ -134,7 +140,7 @@ export default function DashboardShell({ children }) {
                                         )}
                                     >
                                         {item.title}
-                                    </a>
+                                    </Link>
                                 );
                             }
                             // 带子菜单：点击展开下拉
@@ -161,19 +167,21 @@ export default function DashboardShell({ children }) {
                                             {subItems.map((sub) => {
                                                 const subActive = sub.key === pathname;
                                                 return (
-                                                    <a
+                                                    <Link
                                                         key={sub.key}
                                                         href={sub.href}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                         onClick={() => setOpenDropdown(null)}
                                                         className={cn(
-                                                            'block px-3 py-2 text-sm transition-colors',
+                                                            'block w-full text-left px-3 py-2 text-sm transition-colors',
                                                             subActive
                                                                 ? 'bg-[#3eb489] text-white'
                                                                 : 'text-gray-700 hover:bg-gray-100'
                                                         )}
                                                     >
                                                         {sub.title}
-                                                    </a>
+                                                    </Link>
                                                 );
                                             })}
                                         </div>
@@ -187,6 +195,10 @@ export default function DashboardShell({ children }) {
                         <FtpNavDropdown />
                         {/* OSS 文件管理下拉 */}
                         <OssNavDropdown />
+                        {/* K3S 集群管理下拉 */}
+                        <K3sNavDropdown />
+                        {/* MySQL 数据库管理下拉 */}
+                        <MySqlNavDropdown />
                     </nav>
                     {/* 当前用户与登出 */}
                     {currentUser && (
@@ -208,9 +220,13 @@ export default function DashboardShell({ children }) {
                 </header>
 
                 {/* 内容区：占满宽度 */}
-                <main className="flex-1 min-w-0 px-3 pt-1.5 pb-3 sm:px-5 sm:pt-2.5 sm:pb-5 pb-12">
-                    <div>{title}</div>
-                    <Separator className="my-2" />
+                <main className="flex-1 min-w-0 px-3 pt-1.5 pb-3 sm:px-5 sm:pt-2.5 sm:pb-5">
+                    {!hideTitle && (
+                        <>
+                            <div>{title}</div>
+                            <Separator className="my-2" />
+                        </>
+                    )}
                     {children}
                     <div id="json-id"></div>
                 </main>

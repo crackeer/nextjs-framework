@@ -86,13 +86,13 @@ export default function Page() {
     // 窗口大小响应
     const [editorHeight, setEditorHeight] = useState(() => {
         if (typeof window !== 'undefined') {
-            return window.innerHeight - 200;
+            return window.innerHeight - 160;
         }
         return 500;
     });
 
     useEffect(() => {
-        const onResize = () => setEditorHeight(window.innerHeight - 200);
+        const onResize = () => setEditorHeight(window.innerHeight - 160);
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
@@ -230,7 +230,7 @@ export default function Page() {
             />
 
             {/* 按钮栏 */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2 mb-[-8px]">
                 <Button size="sm" onClick={loadJSON} variant="outline">导入</Button>
                 <Button size="sm" onClick={saveJSON} variant="outline">导出</Button>
                 <Button size="sm" onClick={toGoStruct} variant="outline">转Go结构体</Button>

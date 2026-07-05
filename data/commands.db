@@ -1,0 +1,32 @@
+{
+  "commands": [
+    {
+      "id": 1,
+      "name": "啊u的互动",
+      "command": "ls",
+      "parent_id": null,
+      "sort_order": 0,
+      "created_at": "2026-07-04T11:09:52.332Z",
+      "updated_at": "2026-07-04T11:09:52.332Z"
+    },
+    {
+      "id": 2,
+      "name": "uuuu",
+      "command": "cat /tmp",
+      "parent_id": null,
+      "sort_order": 0,
+      "created_at": "2026-07-04T11:10:29.581Z",
+      "updated_at": "2026-07-04T11:10:29.581Z"
+    },
+    {
+      "id": 3,
+      "name": "重启服务",
+      "command": "ls \ncat /aaa",
+      "parent_id": null,
+      "sort_order": 0,
+      "created_at": "2026-07-04T11:17:07.358Z",
+      "updated_at": "2026-07-04T11:17:07.358Z"
+    }
+  ],
+  "nextId": 4
+}

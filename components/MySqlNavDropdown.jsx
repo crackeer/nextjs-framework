@@ -1,10 +1,9 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, Terminal, FolderOpen } from 'lucide-react';
+import { ChevronDown, Database } from 'lucide-react';
 
-// 顶部导航的 Ssh 下拉：列出 app.config 中配置的 SSH 主机，提供终端和文件管理入口
-export default function SshNavDropdown() {
+export default function MySqlNavDropdown() {
     const [open, setOpen] = useState(false);
     const [hosts, setHosts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,7 +11,7 @@ export default function SshNavDropdown() {
     const router = useRouter();
 
     useEffect(() => {
-        fetch('/api/ssh/hosts')
+        fetch('/api/mysql/hosts')
             .then((r) => r.json())
             .then((data) => {
                 setHosts(data.hosts || []);
@@ -21,7 +20,6 @@ export default function SshNavDropdown() {
             .catch(() => setLoading(false));
     }, []);
 
-    // 点击外部关闭下拉
     useEffect(() => {
         const onClick = (e) => {
             if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -30,15 +28,8 @@ export default function SshNavDropdown() {
         return () => document.removeEventListener('mousedown', onClick);
     }, []);
 
-    const onTerminalClick = (name) => {
-        // 带时间戳，确保每次点击都新建一个 tab（即使 host 相同）
-        const url = `/ssh?host=${encodeURIComponent(name)}&t=${Date.now()}`;
-        window.open(url, '_blank');
-        setOpen(false);
-    };
-
-    const onFileClick = (name) => {
-        router.push(`/ssh/file?host=${encodeURIComponent(name)}`);
+    const onConnectClick = (name) => {
+        router.push(`/mysql?host=${encodeURIComponent(name)}`);
         setOpen(false);
     };
 
@@ -48,8 +39,8 @@ export default function SshNavDropdown() {
                 onClick={() => setOpen((v) => !v)}
                 className="flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
             >
-                <Terminal className="h-4 w-4" />
-                <span>Ssh</span>
+                <Database className="h-4 w-4" />
+                <span>MySQL</span>
                 <ChevronDown className="h-3 w-3" />
             </button>
             {open && (
@@ -58,45 +49,26 @@ export default function SshNavDropdown() {
                         <div className="px-3 py-2 text-sm text-gray-400">加载中…</div>
                     ) : hosts.length === 0 ? (
                         <div className="px-3 py-2 text-sm text-gray-400">
-                            未配置 SSH 主机
+                            未配置 MySQL 数据库
                             <div className="text-xs mt-1 text-gray-500">
-                                请在 config/app.config.js 的 ssh 字段添加
+                                请在 config/app.config.js 的 mysql 字段添加
                             </div>
                         </div>
                     ) : (
                         <>
-                            {/* SSH 终端入口列表 */}
-                            <div className="px-3 py-1.5 text-xs text-gray-400 font-medium">终端</div>
+                            <div className="px-3 py-1.5 text-xs text-gray-400 font-medium">数据库列表</div>
                             {hosts.map((h) => (
                                 <button
-                                    key={`terminal-${h.name}`}
-                                    onClick={() => onTerminalClick(h.name)}
+                                    key={h.name}
+                                    onClick={() => onConnectClick(h.name)}
                                     className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 transition-colors text-left"
                                 >
-                                    <Terminal className="h-4 w-4 text-gray-500" />
+                                    <Database className="h-4 w-4 text-gray-500" />
                                     <div className="flex-1 min-w-0">
                                         <div className="text-sm text-gray-800">{h.name}</div>
                                         <div className="text-xs text-gray-400 truncate">
                                             {h.username}@{h.host}:{h.port}
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
-                            {/* 分隔符 */}
-                            <div className="my-1 border-t border-gray-200" />
-                            {/* SSH 文件管理入口列表 */}
-                            <div className="px-3 py-1.5 text-xs text-gray-400 font-medium">文件管理</div>
-                            {hosts.map((h) => (
-                                <button
-                                    key={`file-${h.name}`}
-                                    onClick={() => onFileClick(h.name)}
-                                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 transition-colors text-left"
-                                >
-                                    <FolderOpen className="h-4 w-4 text-gray-500" />
-                                    <div className="flex-1 min-w-0">
-                                        <div className="text-sm text-gray-800">{h.name}</div>
-                                        <div className="text-xs text-gray-400 truncate">
-                                            {h.username}@{h.host}:{h.port}
+                                            {h.database && ` / ${h.database}`}
                                         </div>
                                     </div>
                                 </button>

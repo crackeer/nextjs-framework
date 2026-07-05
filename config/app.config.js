@@ -20,6 +20,8 @@
  *             privateKey 私钥内容（PEM 格式字符串）
  *   ftp      FTP 服务器列表
  *   oss      对象存储配置列表（S3 兼容协议）
+ *   db       数据库配置
+ *             path  SQLite 数据库文件路径（相对于项目根目录）
  * ------------------------------------------------------------------
  */
 module.exports = {
@@ -47,14 +49,14 @@ module.exports = {
             host: '10.33.207.152',
             port: 9002,
             username: 'root',
-            password: '123323234567',
+            password: '1234567',
         },
          {
             name: 'ssh-server2',
             host: '10.33.207.152',
             port: 9002,
             username: 'root',
-            password: '122223232334567',
+            password: '1234567',
         }
         // {
         //     name: 'web-server',
@@ -120,6 +122,40 @@ module.exports = {
         //     accessKeySecret: 'minioadmin',
         //     endpoint: 'http://192.168.1.10:9000',
         //     forcePathStyle: true,
+        // },
+    ],
+
+    // 数据库配置（SQLite）
+    db: {
+        path: 'data/commands.db',
+    },
+
+    // K3S 集群配置列表：在顶部导航 K3s 下拉中选择连接
+    // 通过本地 kubeconfig 文件连接 Kubernetes 集群
+    //   name         显示名称（唯一）
+    //   kubeConfig   kubeconfig 文件的本地绝对路径
+    k3s: [
+        // {
+        //     name: 'k3s-cluster1',
+        //     kubeConfig: '/Users/user/.kube/config',
+        // },
+    ],
+
+    // MySQL 数据库配置列表：在顶部导航 MySQL 下拉中选择连接
+    //   name         显示名称（唯一）
+    //   host         MySQL 主机地址
+    //   port         MySQL 端口（默认 3306）
+    //   username     登录用户名
+    //   password     密码
+    //   database     默认数据库（可选）
+    mysql: [
+        // {
+        //     name: 'mysql-local',
+        //     host: 'localhost',
+        //     port: 3306,
+        //     username: 'root',
+        //     password: 'your-password',
+        //     database: 'test',
         // },
     ],
 };
